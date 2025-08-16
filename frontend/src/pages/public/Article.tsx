@@ -19,80 +19,131 @@ import RecommendationBox from '../../components/UI/RecommendationBox';
 import ProductComment from '../../components/UI/ProductComment';
 import WriteComment from '../../components/WriteComment';
 import ImageWrapper from '../../components/UI/ImageWrapper';
+import SeoTags from '../../utils/lib/SEO';
+import { useState } from 'react';
+import Button from '../../components/UI/Button';
 
 const Article = () => {
+  const [replyMode, setReplyMode] = useState<{ parentId: string | null }>({
+    parentId: null,
+  });
+
   const { id } = useParams();
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['article', id],
     queryFn: () => getArticle(id as string),
   });
-
-  console.log(data)
   return (
-    <WithLoaderAndError {...{ data, isLoading, isError, error }}>
-      {data && (
-        <main className='flex gap-4 flex-col'>
-          <ImageSlide image={data.images[0]}>
-            <>
-              <h1 className={cn('text-main-white', textTitle1)}>
-                {data.title}
-              </h1>
-              <div>
-                <CategoryText
-                  children={data.category[0]}
-                  className='text-main-white/70 border-main-white/70'
-                />
-              </div>
-            </>
-          </ImageSlide>
-          <div className='flex p-4 gap-4 article-sidebar:flex-col'>
-            <section className='flex flex-col gap-8 w-full'>
-              <ArticleSummary
-                createdAt={data.createdAt}
-                views={data.view}
-                postId={data._id}
-                postTitle={data.title}
-              />
-              <Markdown text={data.description} />
-              <section className={cn('flex items-center gap-2', bgProductPage)}>
-                <ImageWrapper
-                  src={data.author?.image}
-                  alt={data.author?.name}
-                  className='w-9 h-9 rounded-full'
-                />
-                <div className='flex flex-col'>
-                  <p className={textBody1Bold}>{data.author?.name}</p>
-                  <p className={textBody3}>{data.author?.desc}</p>
+    <>
+      <SeoTags titleTemplate='مقالات' description='' Url='' keywords='' />
+      <WithLoaderAndError {...{ data, isLoading, isError, error }}>
+        {data && (
+          <main className='flex gap-4 flex-col'>
+            <ImageSlide image={data.images[0]}>
+              <>
+                <h1 className={cn('text-main-white', textTitle1)}>
+                  {data.title}
+                </h1>
+                <div>
+                  <CategoryText
+                    children={data.category[0]}
+                    className='text-main-white/70 border-main-white/70'
+                  />
                 </div>
-              </section>
-              <section className='flex flex-col gap-4' id='comments'>
-                <h2 className={cn(textTitle3, bgTextColor)}>آخرین نظرات</h2>
-                <ul className='flex flex-col gap-4'>
-                  {data.comments.map((comment) => (
-                    <ProductComment
-                      key={comment._id}
-                      comment={comment.text}
-                      name={
-                        // comment.userID.first_name +
-                        ' ' 
-                        // comment.userID.last_name
+              </>
+            </ImageSlide>
+            <div className='flex p-4 gap-4 article-sidebar:flex-col'>
+              <section className='flex flex-col gap-8 w-full'>
+                <ArticleSummary
+                  createdAt={data.createdAt}
+                  views={data.view}
+                  postId={data._id}
+                  postTitle={data.title}
+                />
+                <Markdown text={data.description} />
+                <section
+                  className={cn('flex items-center gap-2', bgProductPage)}
+                >
+                  <ImageWrapper
+                    src={data.author?.image}
+                    alt={data.author?.name}
+                    className='w-9 h-9 rounded-full'
+                  />
+                  <div className='flex flex-col'>
+                    <p className={textBody1Bold}>{data.author?.name}</p>
+                    <p className={textBody3}>{data.author?.desc}</p>
+                  </div>
+                </section>
+                <section className='flex flex-col gap-4' id='comments'>
+                  <h2 className={cn(textTitle3, bgTextColor)}>آخرین نظرات</h2>
+                  <ul className='flex flex-col gap-4'>
+                    {data.comments.map((comment) => {
+                      if (comment.status === 'approved') {
+                        return (
+                          <div key={comment._id}>
+                            <ProductComment
+                              comment={comment.text}
+                              name={
+                                comment.userID.first_name +
+                                ' ' +
+                                comment.userID.last_name
+                              }
+                              date={comment.createdAt}
+                            />
+                            <Button
+                              intent='secondary'
+                              size='fit'
+                              onClick={() =>
+                                setReplyMode({ parentId: comment._id })
+                              }
+                            >
+                              پاسخ
+                            </Button>
+                            {comment.answer?.map((ans) =>
+                              ans.status === 'approved' ? (
+                                <div
+                                  key={ans._id}
+                                  className='mt-2 pr-8 border-l'
+                                >
+                                  <ProductComment
+                                    comment={ans.text}
+                                    name={
+                                      ans.userID.first_name +
+                                      ' ' +
+                                      ans.userID.last_name
+                                    }
+                                    date={ans.createdAt}
+                                  />
+                                </div>
+                              ) : null
+                            )}
+                          </div>
+                        );
                       }
-                      date={comment.createdAt}
-                    />
-                  ))}
-                </ul>
-                <WriteComment type='blog' postId={data._id} />
+                      return null;
+                    })}
+                  </ul>
+                  <WriteComment
+                    type='blog'
+                    postId={data._id}
+                    parentId={replyMode.parentId}
+                    exitReplyMode={() => setReplyMode({ parentId: null })}
+                  />
+                </section>
               </section>
-            </section>
-            <section className='sticky self-start top-2 flex flex-col gap-4 basis-[27rem] max-w-[27rem] article-sidebar:self-auto'>
-              <RecommendationBox title='مقالات پیشنهادی' data={data.related} />
-              <RecommendationBox title='جدیدترین مقالات' data={data.latest} />
-            </section>
-          </div>
-        </main>
-      )}
-    </WithLoaderAndError>
+              <section className='sticky self-start top-2 flex flex-col gap-4 basis-[27rem] max-w-[27rem] article-sidebar:self-auto'>
+                <RecommendationBox
+                  title='مقالات پیشنهادی'
+                  data={data.related}
+                />
+                <RecommendationBox title='جدیدترین مقالات' data={data.latest} />
+              </section>
+            </div>
+          </main>
+        )}
+      </WithLoaderAndError>
+    </>
   );
 };
 

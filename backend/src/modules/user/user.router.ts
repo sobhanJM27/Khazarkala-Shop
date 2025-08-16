@@ -12,9 +12,7 @@ export default (router: Router) => {
   );
   router.get('/user/getBought', authMiddleware, userController.getBought);
   router.get('/user/getAllUser', userController.getAllUser);
-  router.delete(
-    '/user/:userId',
-    authMiddleware,
-    userController.deleteUser
-  );
+  router.delete('/user/:userId', authMiddleware, userController.deleteUser);
+  router.put('/user/address', authMiddleware, userController.updateAddress);
+  router.get('/user/address', authMiddleware, userController.getAddress);
 };

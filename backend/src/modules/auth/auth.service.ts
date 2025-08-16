@@ -48,7 +48,12 @@ class AuthService {
       return await this.generateCodeAndUpdateUserOtp(existUser);
     } else if (!existUser) {
       let role: string = 'USER';
-      if (phone === '09035134830') role = 'ADMIN';
+      if (
+        phone === '09035134830' ||
+        phone === '09355690741' ||
+        phone === '09113842853'
+      )
+        role = 'ADMIN';
       const createUser: IUser = await this.userRepository.create({
         phone,
         Role: role,
@@ -59,7 +64,7 @@ class AuthService {
     }
   }
 
-  async registerStepTwo(registerDto: RegisterDto, userID: string) {
+  async registerStepTwo(registerDto: RegisterDto) {
     const { first_name, last_name, email, phone, code } = registerDto;
     const user = await this.userRepository.findOne({ phone }, { password: 0 });
     if (user.first_name || user.last_name)
@@ -109,12 +114,11 @@ class AuthService {
     const { phone } = restCodeDto;
     const findUser = await this.userRepository.findOne({ phone });
     if (!findUser) throw NotFound('کاربری یافت نشد');
-    return this.generateCodeAndUpdateUserOtp(findUser);
+    return await this.generateCodeAndUpdateUserOtp(findUser);
   }
 
   async sendPhoneCode(code: string, phone: string) {
-    const text: string = `کد:${code}`;
-    const statusSendSms = await sendSMS(phone, text);
+    const statusSendSms = await sendSMS(code, phone);
     if (!statusSendSms)
       throw ServiceUnavailable(GlobalMessageError.ServiceUnavailable);
     return {
@@ -157,6 +161,7 @@ class AuthService {
     if (updateUser.modifiedCount == 0)
       throw ServiceUnavailable(GlobalMessageError.ServiceUnavailable);
     await user.save();
+    await this.sendPhoneCode(code, user.phone);
     return { message: 'کد با موفقیت برای شما ارسال شد', code };
   }
 

@@ -6,9 +6,17 @@ import {
   textTitle1,
 } from '../../constants/styles';
 import { cn } from '../../utils/lib/cn';
+import SeoTags from '../../utils/lib/SEO';
 
 const ContactUs = () => {
   return (
+    <>
+      <SeoTags
+        titleTemplate='تماس با ما'
+        description=''
+        Url=''
+        keywords=''
+      />    
     <section className='flex flex-col gap-10 px-12 py-6'>
       <div className='flex flex-col gap-4'>
         <h1 className={cn(textTitle1, bgTextColor)}>تماس با ما</h1>
@@ -34,6 +42,7 @@ const ContactUs = () => {
         ما مشتاق شنیدن صدای گرم شما هستیم. با ما تماس بگیرید!
       </p>
     </section>
+    </>
   );
 };
 

@@ -63,6 +63,7 @@ class CommentController {
     try {
       const result =
         await this.commentService.readAllCommentsAndAnswerByAdmin();
+      console.log(result);
       return res.status(200).json(result);
     } catch (err) {
       next(err);

@@ -6,9 +6,17 @@ import SummaryBox from '../../components/UI/SummaryBox';
 import { textBody1Bold, textTitle2 } from '../../constants/styles';
 import { summaryBoxesLinks } from '../../constants/summaryBoxesLinks';
 import { cn } from '../../utils/lib/cn';
+// import SeoTags from '../../utils/lib/SEO';
 
 const Home = () => {
   return (
+    <>
+      {/* <SeoTags
+        titleTemplate='صفحه اصلی'
+        description=''
+        Url=''
+        keywords=''
+      />     */}
     <main className='flex flex-col gap-4'>
       <section className='flex flex-col gap-4 pt-4 text-center p-8 leading-tight'>
         <h1 className={cn('', textTitle2)}>خزر کالا چیست؟</h1>
@@ -39,6 +47,7 @@ const Home = () => {
       </section>
       <Bio />
     </main>
+    </>
   );
 };
 

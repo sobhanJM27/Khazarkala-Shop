@@ -47,6 +47,7 @@ export type Product = IdSchema & {
   createdAt: string;
   comments: Comment[];
   related: Product[];
+  count: number;
 };
 
 export type Article = IdSchema & {
@@ -103,3 +104,4 @@ export type DiscountCode = IdSchema & {
 export type UploadedImage = IdSchema & {
   images: string[];
 };
+

@@ -1,6 +1,6 @@
 import { getFromStorage, setToStorage } from './localStorage';
 
-export default function handleTheme(themeVal?: 'light' | 'dark') {
+export default function handleTheme(themeVal?: 'dark' | 'light') {
   if (themeVal) setToStorage('theme', themeVal);
   const theme = getFromStorage('theme');
   if (

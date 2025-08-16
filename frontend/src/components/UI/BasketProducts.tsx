@@ -42,7 +42,14 @@ const BasketProducts = ({ listProduct, handleDeleteProduct }: Props) => {
               </span>
             </TableCell>
             <TableCell className={cn(textBody2, 'text-main-primary-text')}>
-              {toPersianNumbers(product.priceAfterDiscount, true)} تومان
+              {toPersianNumbers(
+                product.priceAfterDiscount * product.count,
+                true
+              )}{' '}
+              تومان
+              <span className='text-sm text-gray-500 mr-2'>
+                ({toPersianNumbers(product.count)} عدد)
+              </span>
             </TableCell>
             <TableCell className='mr-auto'>
               <div className='flex justify-end'>
@@ -60,31 +67,38 @@ const BasketProducts = ({ listProduct, handleDeleteProduct }: Props) => {
   ];
 
   return (
-    <div className='flex-1 whitespace-nowrap max-w-[40rem] w-[60%] flex-col bg-main-secondary-bg rounded-small'>
+    <div
+      className={cn(
+        'flex-1 whitespace-nowrap bg-main-secondary-bg rounded-small',
+        'max-w-[40rem] w-[60%]'
+      )}
+    >
       {listProduct.length === 0 ? (
         <div className='flex items-center justify-center gap-2 p-11'>
           <Basket className='w-5 h-5 dark:invert' />
           <p className={textTitle4}>سبد خرید شما خالی است</p>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {headers.map((head, i) => (
-                <TableHead
-                  key={i}
-                  className={cn(
-                    textBody1Bold,
-                    'py-[1.4375rem] article:py-[0.9375rem] px-10 article:px-5 text-right'
-                  )}
-                >
-                  {head}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>{tableRows}</TableBody>
-        </Table>
+        <div className='overflow-x-auto'>
+          <Table className='min-w-[500px]'>
+            <TableHeader>
+              <TableRow>
+                {headers.map((head, i) => (
+                  <TableHead
+                    key={i}
+                    className={cn(
+                      textBody1Bold,
+                      'py-[1.4375rem] article:py-[0.9375rem] px-10 article:px-5 text-right'
+                    )}
+                  >
+                    {head}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>{tableRows}</TableBody>
+          </Table>
+        </div>
       )}
     </div>
   );

@@ -25,6 +25,7 @@ const MyComments = lazy(() => import('./pages/user/MyComments'));
 const Profile = lazy(() => import('./pages/user/Profile'));
 const Basket = lazy(() => import('./pages/user/Basket'));
 const Invoice = lazy(() => import('./pages/user/Invoice'));
+const Address = lazy(() => import('./pages/user/Address'));
 const PaymentFailed = lazy(() => import('./pages/user/PaymentFailed'));
 
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
@@ -45,7 +46,10 @@ export default function App() {
   useInitialBasketProducts();
   if (!isReady)
     return (
-      <Logo className='w-24 h-w-24 animate-pulse text-center m-auto mt-4' id={''} />
+      <Logo
+        className='w-24 h-w-24 animate-pulse text-center m-auto mt-4'
+        id={''}
+      />
     );
   return (
     <Router>
@@ -124,6 +128,7 @@ export default function App() {
             <Route path='profile' element={<Profile />} />
             <Route path='basket' element={<Basket />} />
             <Route path='basket/:id' element={<Invoice />} />
+            <Route path='address' element={<Address />} />
             <Route path='payment-failed' element={<PaymentFailed />} />
           </Route>
           <Route

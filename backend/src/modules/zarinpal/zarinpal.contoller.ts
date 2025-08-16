@@ -91,6 +91,21 @@ class PaymentController {
       next(error);
     }
   }
+
+  async orderDetail(
+    req: Request & { user: IUser },
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { authority } = req.params;
+      const user = req.user;
+      const result = await PaymentService.getAuthority(authority, user._id);
+      return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 const paymentController = new PaymentController();

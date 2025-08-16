@@ -1,14 +1,14 @@
-import axios, { AxiosError } from "axios";
-import { logIn, logOut, updateAccessToken } from "../redux/userSlice";
-import { useAppSelector } from "./useReduxHooks";
-import { useAppDispatch } from "./useReduxHooks";
-import useRefreshToken from "./useRefreshToken";
-import { getRefreshToken } from "../api/auth";
-import { getCookie, removeCookie } from "../utils/cookie";
-import { useEffect, useState } from "react";
-import { Roles } from "../types/auth";
-import { getFromStorage } from "../utils/localStorage";
-import { updateProduct } from "../redux/basketSlice";
+import axios, { AxiosError } from 'axios';
+import { logIn, logOut, updateAccessToken } from '../redux/userSlice';
+import { useAppSelector } from './useReduxHooks';
+import { useAppDispatch } from './useReduxHooks';
+import useRefreshToken from './useRefreshToken';
+import { getRefreshToken } from '../api/auth';
+import { getCookie, removeCookie } from '../utils/cookie';
+import { useEffect, useState } from 'react';
+import { Roles } from '../types/auth';
+import { getFromStorage } from '../utils/localStorage';
+import { updateProduct } from '../redux/basketSlice';
 
 export const useAuth = () => {
   const user = useAppSelector((state) => state.user);
@@ -28,7 +28,7 @@ export const useInitialAuth = () => {
 
   useEffect(() => {
     const getAccess = async () => {
-      const token = getCookie("win_token");
+      const token = getCookie('win_token');
       if (token) {
         if (!Auth) {
           try {
@@ -46,9 +46,9 @@ export const useInitialAuth = () => {
             if (!axios.isAxiosError(errors)) {
             } else {
               if (errors?.response?.status === 401) {
-                removeCookie("win_token");
+                removeCookie('win_token');
                 dispatch(logOut());
-                window.location.replace("/Login");
+                window.location.replace('/Login');
               }
             }
           } finally {
@@ -71,15 +71,18 @@ export const useInitialAuth = () => {
 export const useInitialBasketProducts = () => {
   const dispatch = useAppDispatch();
   const { Auth } = useAuth();
-  const productIds = getFromStorage("products");
-  const value = productIds ? JSON.parse(productIds as string) : productIds;
+  const storedProducts = getFromStorage('products');
+
+  let parsed: { id: string; count: number }[] = [];
+  try {
+    parsed = storedProducts ? JSON.parse(storedProducts as string) : [];
+  } catch (e) {
+    parsed = [];
+  }
 
   useEffect(() => {
-    const setProducts = () => {
-      if (Auth && value) {
-        dispatch(updateProduct({ productsId: value, qty: value.length ?? 0 }));
-      }
-    };
-    setProducts();
+    if (Auth && parsed.length > 0) {
+      dispatch(updateProduct({ products: parsed }));
+    }
   }, [Auth]);
 };

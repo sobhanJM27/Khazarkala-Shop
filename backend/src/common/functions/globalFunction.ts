@@ -4,7 +4,7 @@ import moment from 'moment-jalali';
 import { isMongoId } from 'class-validator';
 import * as Jwt from 'jsonwebtoken';
 import { IUser, UserModel } from './../../modules/user/model/user.model';
-import { AuthMessageError, NotFoundError } from '../enums/message.enum';
+import { AuthMessageError } from '../enums/message.enum';
 import { TTokenPayload } from '../types/token.type';
 
 async function checkRole(req: Request & { user: string }, role: Array<string>) {

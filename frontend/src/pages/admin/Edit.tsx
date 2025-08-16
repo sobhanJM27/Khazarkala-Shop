@@ -40,7 +40,6 @@ const Edit = () => {
           },
           description: textRef.current!.value,
           sortByNumber: Number(sortRef.current!.value),
-          timeNeeded: undefined,
         }),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['articles'] });

@@ -1,7 +1,7 @@
 {
     "disks":[
         {
-            "name":"disk",
+            "name":"uploads",
             "mountTo":"public/uploads"
         }
     ]

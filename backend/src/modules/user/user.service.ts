@@ -24,11 +24,11 @@ class UserService {
     const findUser = await this.userRepository.findOne({ _id: userID });
     if (!findUser) throw NotFound('کاربری یافت نشد');
     const comment = await this.commentRepository
-      .find({ userID: findUser.id }, { title: 1, text: 1, status: 1 })
-      .populate('userID', 'first_name last_name');
-    const answer = await this.answerRepository
-      .find({ userID: findUser.id }, { title: 1, text: 1, status: 1 })
-      .populate('userID', 'first_name last_name');
+      .find({ userID: findUser.id })
+      .populate('userID', 'first_name last_name')
+      .populate('productID', '_id title')
+      .populate('blogID', '_id title');
+    const answer = await this.answerRepository.find({ userID: findUser.id });
 
     if (!comment && !answer) throw NotFound('شما هیچ کامنتی ندارید');
     return {
@@ -67,6 +67,34 @@ class UserService {
     await this.userRepository.deleteOne({ _id: userID });
 
     return { message: 'کاربر با موفقیت حذف شد' };
+  }
+
+  async updateUserAddress(
+    userID: string,
+    addressData: Partial<IUser['address']>
+  ) {
+    validateObjectID(userID);
+
+    const user = await this.userRepository.findById(userID);
+    if (!user) throw NotFound('کاربری یافت نشد');
+
+    user.address = {
+      ...user.address,
+      ...addressData,
+    };
+
+    await user.save();
+
+    return user.address;
+  }
+
+  async getUserAddress(userID: string) {
+    validateObjectID(userID);
+
+    const user = await this.userRepository.findById(userID);
+    if (!user) throw NotFound('کاربری یافت نشد');
+
+    return user.address || {};
   }
 }
 const UserServices = new UserService();

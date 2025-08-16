@@ -13,7 +13,7 @@ class BlogService {
   ) {}
 
   async createBlog(blog: BlogDto): Promise<object> {
-    let category = await this.categoryModel.findOne({ _id: blog.category });
+    let category = await this.categoryModel.findOne({ title: blog.category });
     await this.blogModel.create({
       title: blog.title,
       description: blog.description,
@@ -60,7 +60,7 @@ class BlogService {
   }
 
   async findBlog(id: string): Promise<IBlog> {
-    const blog = await this.blogModel.findOne({ _id: id })
+    const blog = await this.blogModel.findOne({ _id: id });
 
     if (!blog) throw NotFound('بلاگی با این شناسه پیدا نشد');
     return blog;
@@ -69,11 +69,19 @@ class BlogService {
   async findOneBlog(id: string): Promise<IBlog> {
     const blog = await this.blogModel.findOne({ _id: id }).populate({
       path: 'comments',
-      populate: {
-        path: 'userID',
-        model: 'user',
-        select: 'first_name last_name',
-      },
+      populate: [
+        {
+          path: 'userID',
+          model: 'user',
+          select: 'first_name last_name',
+        },
+        {
+          path: 'answer',
+          populate: {
+            path: 'userID',
+          },
+        },
+      ],
     });
 
     if (!blog) throw NotFound(AuthMessageError.NotFound);
@@ -92,10 +100,7 @@ class BlogService {
       latest.push(result[i]);
     }
     findblog['latest'] = latest;
-    const view = await this.blogModel.updateOne(
-      { _id: id },
-      { $inc: { view: 1 } }
-    );
+    await this.blogModel.updateOne({ _id: id }, { $inc: { view: 1 } });
 
     return findblog;
   }
@@ -133,12 +138,12 @@ class BlogService {
         blogs = await this.blogModel
           .find({})
           .limit(limit)
-          .sort({ createdAt: -1 });
+          .sort({ createdAt: 1 });
       } else if (filter == 'oldest') {
         blogs = await this.blogModel
           .find({})
           .limit(limit)
-          .sort({ createdAt: +1 });
+          .sort({ createdAt: -1 });
       } else {
         blogs = await this.blogModel
           .find({})

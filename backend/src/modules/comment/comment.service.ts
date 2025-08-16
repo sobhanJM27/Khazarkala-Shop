@@ -25,10 +25,21 @@ export class CommentService {
   ) {}
 
   async createSchemaComment(commentDto: CommentDto): Promise<IComment> {
-    let createComment: IComment = await this.commentRepository.create({
+    const fieldName =
+      commentDto.method === 'product'
+        ? 'productID'
+        : commentDto.method === 'blog'
+        ? 'blogID'
+        : null;
+
+    if (!fieldName) {
+      throw createHttpError.BadRequest('method نامعتبر است');
+    }
+
+    let createComment = await this.commentRepository.create({
       text: commentDto.text,
       userID: commentDto.userID,
-      [commentDto.method]: commentDto.ID,
+      [fieldName]: commentDto.ID,
     });
     if (!createComment)
       throw createHttpError.ServiceUnavailable(
@@ -39,25 +50,30 @@ export class CommentService {
 
   async createSchemaAnswer(commentDto: CommentDto): Promise<IAnswer> {
     const findComment = await this.findComment(commentDto.parent);
-    let createAnswer: IAnswer = await this.answerRepository.create({
+
+    const createAnswer: IAnswer = await this.answerRepository.create({
       text: commentDto.text,
       userID: commentDto.userID,
-      title: commentDto.title,
-      [commentDto.method]: commentDto.ID,
       commentID: commentDto.parent,
+      status: statusComment.pending,
     });
+
     if (!createAnswer)
       throw createHttpError.ServiceUnavailable(
         GlobalMessageError.ServiceUnavailable
       );
-    await findComment.updateOne({ $push: { answer: createAnswer } });
-    await findComment.save();
+
+    // فقط _id رو push می‌کنیم، populate بعدا کامل می‌کنه
+    await findComment.updateOne({ $push: { answer: createAnswer._id } });
+
     return createAnswer;
   }
 
   async addComment(commentDto: CommentDto): Promise<object> {
-    const { method } = commentDto;
-    const existRepository = await this.findBlogOrProduct(commentDto.ID, method);
+    const existRepository = await this.findBlogOrProduct(
+      commentDto.ID,
+      commentDto.method
+    );
     const createComment = await this.createSchemaComment(commentDto);
     await this[`${existRepository.type}Repository`].updateOne(
       { _id: commentDto.ID },
@@ -85,7 +101,7 @@ export class CommentService {
 
   async avrageStar(): Promise<number> {
     const comments = await this.commentRepository.find({
-      status: statusComment.accept,
+      status: statusComment.approved,
     });
     const countComment = comments.length;
     let sumStar = 0;
@@ -102,12 +118,16 @@ export class CommentService {
       const findAnswer = await this.answerRepository.findOne({ _id: id });
       if (!findAnswer)
         throw createHttpError.NotFound(NotFoundError.NotFoundComment);
-      findAnswer.status = status ? statusComment.accept : statusComment.reject;
+      findAnswer.status = status
+        ? statusComment.approved
+        : statusComment.rejected;
       await findAnswer.save();
       return { message: 'با موفقیت انجام شد' };
     }
 
-    findComment.status = status ? statusComment.accept : statusComment.reject;
+    findComment.status = status
+      ? statusComment.approved
+      : statusComment.rejected;
     await findComment.save();
 
     if (status === true) {
@@ -164,16 +184,18 @@ export class CommentService {
     id: string
   ): Promise<{ find: any | null }> {
     const filter: FilterQuery<T> = { _id: id, status: true } as any;
-    const find = await repository
-      .findOne(filter)
-      .populate({
-        path: 'comments',
-        select: ['title', 'text', 'fullName', 'star'],
-      })
-      .populate({
-        path: 'comments.answer',
-        select: ['title', 'text', 'fullName'],
-      });
+    const find = await repository.findOne(filter).populate({
+      path: 'comments',
+      populate: [
+        { path: 'userID', select: 'fullName email' }, // اطلاعات کاربر کامنت
+        {
+          path: 'answer',
+          populate: [
+            { path: 'userID', select: 'fullName email' }, // اطلاعات کاربر Answer
+          ],
+        },
+      ],
+    });
 
     if (!find) throw createHttpError.NotFound(NotFoundError.NotFoundBlog);
     return { find };
@@ -219,9 +241,22 @@ export class CommentService {
     const allComment = await this.commentRepository
       .find()
       .populate({
+        path: 'userID',
+        model: 'user',
+      })
+      .populate({
+        path: 'productID',
+        model: 'product',
+      })
+      .populate({
+        path: 'blogID',
+        model: 'blog',
+      })
+      .populate({
         path: 'answer',
-        model: 'answer',
-        match: { status: statusComment.reject },
+        populate: {
+          path: 'userID',
+        },
       })
       .exec();
 

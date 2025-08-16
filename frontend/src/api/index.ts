@@ -145,3 +145,43 @@ export const getSales = async (auth: PrivateAuth): Promise<any[]> => {
     throw new Error(response.statusText);
   }
 };
+
+export const getUserAddress = async (
+  auth: PrivateAuth
+): Promise<{
+  province?: string;
+  city?: string;
+  postalCode?: string;
+  street?: string;
+  detail?: string;
+}> => {
+  const privateAxios = createPrivateAxios(auth);
+  const response = await privateAxios.get(Endpoints.getUserAddress);
+  if (response.status === 200) {
+    return response.data;
+  } else {
+    throw new Error(response.statusText);
+  }
+};
+
+export const updateUserAddress = async (
+  auth: PrivateAuth,
+  addressData: {
+    province?: string;
+    city?: string;
+    postalCode?: string;
+    street?: string;
+    detail?: string;
+  }
+): Promise<{ message: string }> => {
+  const privateAxios = createPrivateAxios(auth);
+  const response = await privateAxios.put(
+    Endpoints.updateUserAddress,
+    addressData
+  );
+  if (response.status === 200) {
+    return response.data;
+  } else {
+    throw new Error(response.statusText);
+  }
+};

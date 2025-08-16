@@ -4,6 +4,7 @@ import { addToBasket, removeProduct } from '../redux/basketSlice';
 
 export const addToBasketHandler = (
   id: string,
+  count: number = 1,
   Auth: boolean,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
@@ -11,7 +12,7 @@ export const addToBasketHandler = (
     toast.error('لطفا وارد حساب کاربری خود شوید');
     return;
   }
-  dispatch(addToBasket({ id }));
+  dispatch(addToBasket({ id, count }));
   toast.success('محصول با موفقیت به سبد خرید اضافه شد');
 };
 

@@ -12,6 +12,8 @@ export const Endpoints = {
   getMyComments: `/user/getAllComment`,
   getUsers: `/user/getAllUser`,
   deleteUser: (userId: string) => `/user/${userId}`,
+  getUserAddress: '/user/address',
+  updateUserAddress: '/user/address',
 
   // Product endpoints
   getProducts: (
@@ -58,9 +60,10 @@ export const Endpoints = {
   setCommentStatus: (commentId: string) => `/comment/changeStatus/${commentId}`,
   deleteComment: (commentId: string) => `/comment/deleteComment/${commentId}`,
   getAllComments: `/comment/allComment`,
+  addAnswer: `/comment/addAnswer`,
 
   // filter endpoints
-  searchAll: (query: string) => `/searchAll?search?${query}`,
+  searchAll: (query: string) => `/searchAll/${query}`,
   searchProduct: (query: string) => `/searchProduct?search?${query}`,
   searchBlog: (query: string) => `/searchBlog?search?${query}`,
 

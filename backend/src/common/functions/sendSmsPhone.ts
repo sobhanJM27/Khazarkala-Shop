@@ -1,25 +1,26 @@
 import axios from 'axios';
 
-const username: string = process.env.MELIPAYAMAK_USERNAME!;
-const password: string = process.env.MELIPAYAMAK_PASSWORD!;
-const url: string = process.env.MELIPAYAMAK_API_URL!;
-const from: string = process.env.MELIPAYAMAK_PHONE!;
-
-export async function sendSMS(phone: string, text: string) {
+export async function sendSMS(code: string, phone: string) {
   try {
     const data = {
-      username,
-      password,
-      from,
+      bodyId: 355847,
       to: phone,
-      text,
+      args: [code],
     };
 
-    const response = await axios.post(url, data);
-    console.log('SMS Sent:', response.data);
+    await axios.post(
+      'https://console.melipayamak.com/api/send/shared/fac987323af344c3b35f7781863ab860',
+      data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
     return true;
   } catch (error) {
-    console.error('Error sending SMS:', error);
+    console.error('Error sending SMS:', error.response?.data || error.message);
     return false;
   }
 }

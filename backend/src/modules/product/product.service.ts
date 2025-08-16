@@ -13,17 +13,17 @@ import {
 } from '../../common/enums/message.enum';
 import { CategoryModel, ICategory } from '../category/model/category.model';
 import { IUser, UserModel } from '../user/model/user.model';
+import { statusEnum as statusComment } from './../../common/enums/status.enum';
 
 class ProductService {
   constructor(
     private readonly productModel = ProductModel<IProduct>,
-    private readonly categortyModel = CategoryModel<ICategory>,
-    private readonly userRepository = UserModel<IUser>,
-    private readonly codeRepository = CodeDiscountModel<ICodeDisCount>
+    private readonly categoryModel = CategoryModel<ICategory>,
+    private readonly codeRepository = CodeDiscountModel<ICodeDisCount>,
+    private readonly userRepository = UserModel<IUser>
   ) {}
 
   async createProduct(product: ProductDto): Promise<object> {
-    let category = await this.categortyModel.findOne({ _id: product.category });
     if (product.discount > 0 && product.discount != 0) {
       const add = (product.discount * product.price) / 100;
       product.priceAfterDiscount = product.price - add;
@@ -35,6 +35,7 @@ class ProductService {
         Math.floor(product.priceAfterDiscount / 10000) * 10000;
     }
 
+    let category = await this.categoryModel.findOne({ title: product.category });
     await this.productModel.create({
       title: product.title,
       Description: product.Description,
@@ -94,10 +95,18 @@ class ProductService {
   async findProduct(id: string): Promise<IProduct> {
     const product = await this.productModel.findOne({ _id: id }).populate({
       path: 'comments',
-      populate: {
-        path: 'userID',
-        select: 'first_name last_name',
-      },
+      populate: [
+        {
+          path: 'userID',
+          select: 'first_name last_name',
+        },
+        {
+          path: 'answer',
+          populate: {
+            path: 'userID',
+          },
+        },
+      ],
     });
 
     if (!product) throw NotFound(AuthMessageError.NotFound);
@@ -107,10 +116,18 @@ class ProductService {
   async findOneProduct(id: string): Promise<IProduct> {
     const product = await this.productModel.findOne({ _id: id }).populate({
       path: 'comments',
-      populate: {
-        path: 'userID',
-        select: 'first_name last_name',
-      },
+      populate: [
+        {
+          path: 'userID',
+          select: 'first_name last_name',
+        },
+        {
+          path: 'answer',
+          populate: {
+            path: 'userID',
+          },
+        },
+      ],
     });
 
     if (!product) throw NotFound(AuthMessageError.NotFound);
@@ -146,92 +163,57 @@ class ProductService {
   }
 
   async findAllProduct(
-    categoryId: string,
-    limit: number,
-    sort: string
-  ): Promise<Object> {
-    let result: Object;
-    if (categoryId !== 'undefined' && sort == 'latest') {
-      let category = await this.categortyModel.findOne({ _id: categoryId });
-      const products = await this.productModel
-        .find({ category: category.title })
-        .limit(limit)
-        .sort({ createdAt: -1 });
-      result = products;
-    } else if (categoryId !== 'undefined' && sort == 'oldest') {
-      let category = await this.categortyModel.findOne({ _id: categoryId });
-      const products = await this.productModel
-        .find({ category: category.title })
-        .limit(limit)
-        .sort({ createdAt: +1 });
-      result = products;
-    } else if (categoryId !== 'undefined' && sort == 'popular') {
-      let category = await this.categortyModel.findOne({ _id: categoryId });
-      const products = await this.productModel
-        .find({ category: category.title })
-        .limit(limit)
-        .sort({ sale: -1 });
-      result = products;
-    } else if (categoryId !== 'undefined' && sort == 'high') {
-      let category = await this.categortyModel.findOne({ _id: categoryId });
-      const products = await this.productModel
-        .find({ category: category.title })
-        .limit(limit)
-        .sort({ price: -1 });
-      result = products;
-    } else if (categoryId !== 'undefined' && sort == 'low') {
-      let category = await this.categortyModel.findOne({ _id: categoryId });
-      const products = await this.productModel
-        .find({ category: category.title })
-        .limit(limit)
-        .sort({ price: +1 });
-      result = products;
-    } else if (categoryId !== 'undefined') {
-      let category = await this.categortyModel.findOne({ _id: categoryId });
-      const products = await this.productModel
-        .find({ category: category.title })
-        .limit(limit);
-      result = products;
-    } else if (categoryId == 'undefined' && sort !== 'undefined') {
-      let products: Object;
-      if (sort == 'latest') {
-        products = await this.productModel
-          .find({})
-          .limit(limit)
-          .sort({ createdAt: -1 });
-      } else if (sort == 'oldest') {
-        products = await this.productModel
-          .find({})
-          .limit(limit)
-          .sort({ createdAt: +1 });
-      } else if (sort == 'popular') {
-        products = await this.productModel
-          .find({})
-          .limit(limit)
-          .sort({ sale: -1 });
-      } else if (sort == 'low') {
-        products = await this.productModel
-          .find({})
-          .limit(limit)
-          .sort({ price: +1 });
-      } else if (sort == 'high') {
-        products = await this.productModel
-          .find({})
-          .limit(limit)
-          .sort({ price: -1 });
-      }
-      result = products;
-    } else if (categoryId == 'undefined' && sort == 'undefined') {
-      const AllProduct = await this.productModel.find({}).limit(limit);
-      if (!AllProduct) throw NotFound(AuthMessageError.NotFound);
-      result = AllProduct;
+    categoryId?: string,
+    limit?: number,
+    sort?: string
+  ): Promise<object> {
+    const isCategorySet =
+      categoryId && categoryId !== 'undefined' && categoryId.trim() !== '';
+    const isSortSet = sort && sort !== 'undefined' && sort.trim() !== '';
+
+    const finalLimit = limit && !isNaN(limit) ? limit : 10;
+
+    let query: any = {};
+    let sortOption: any = {};
+
+    if (isCategorySet) {
+      const category = await this.categoryModel.findOne({ _id: categoryId });
+      if (!category) throw NotFound(AuthMessageError.NotFound);
+      query.category = category.title;
     }
 
-    return result;
+    if (isSortSet) {
+      switch (sort) {
+        case 'latest':
+          sortOption = { createdAt: 1 };
+          break;
+        case 'oldest':
+          sortOption = { createdAt: -1 };
+          break;
+        case 'highest':
+          sortOption = { price: -1 };
+          break;
+        case 'lowest':
+          sortOption = { price: 1 };
+          break;
+      }
+    }
+
+    let productsQuery = this.productModel.find(query);
+    if (Object.keys(sortOption).length > 0) {
+      productsQuery = productsQuery.sort(sortOption);
+    }
+    if (finalLimit > 0) {
+      productsQuery = productsQuery.limit(finalLimit);
+    }
+
+    const products = await productsQuery;
+
+    return products;
   }
 
   async findCategoty(categoryId: string): Promise<ICategory> {
-    let category = await this.categortyModel.findOne({ _id: categoryId });
+    let category = await this.categoryModel.findOne({ _id: categoryId });
     if (!category) throw NotFound(AuthMessageError.NotFound);
     return category;
   }

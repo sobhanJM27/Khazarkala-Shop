@@ -31,7 +31,7 @@ export class AuthController {
       const userID = { _id: '3134134' };
       const result: object = await AuthService.registerStepTwo(
         body,
-        userID._id
+        // userID._id
       );
       return res.status(201).json(result);
     } catch (error) {

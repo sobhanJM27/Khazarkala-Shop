@@ -15,11 +15,11 @@ const SeoTags = ({
   description,
   Url,
   keywords,
-  ogImage,
+  // ogImage,
   children,
 }: Props) => {
-  ogImage = ogImage || 'https://x.ir/og-image.png';
-  const imgType = ogImage.split('.').pop();
+  // ogImage = ogImage || 'https://x.ir/og-image.png';
+  // const imgType = ogImage.split('.').pop();
   return (
     <HelmetProvider>
       <Helmet>
@@ -33,7 +33,7 @@ const SeoTags = ({
         <meta property='og:description' content={description} />
         <meta property='og:url' content={Url} />
         <meta property='og:site_name' content='خزر کالا' />
-        <meta property='og:image' content={ogImage} />
+        {/* <meta property='og:image' content={ogImage} />
         <meta property='og:image:secure_url' content={ogImage} />
         <meta property='og:image:width' content='700' />
         <meta property='og:image:height' content='300' />
@@ -46,7 +46,7 @@ const SeoTags = ({
         <meta name='twitter:card' content='summary_large_image' />
         <meta name='twitter:title' content={titleTemplate} />
         <meta name='twitter:description' content={description} />
-        <meta name='twitter:image' content={ogImage} />
+        <meta name='twitter:image' content={ogImage} /> */}
         {children}
       </Helmet>
     </HelmetProvider>

@@ -23,8 +23,9 @@ const ProductDetailsBox = ({ id, image, price, priceAfterDicount }: Props) => {
   const dispatch = useAppDispatch();
   const addHandler = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    addToBasketHandler(id, Auth, dispatch);
+    addToBasketHandler(id, 1, Auth, dispatch);
   };
+
   return (
     <aside
       className='sticky top-2 flex flex-col gap-4 basis-[22rem] z-50 max-w-[22rem] bg-main-secondary-bg p-4 rounded-big shadow-box-shadow-3 self-start

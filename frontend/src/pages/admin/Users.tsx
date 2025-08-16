@@ -41,6 +41,7 @@ const Users = () => {
                     disabled={deleting}
                     intent='secondary'
                     size='base'
+                    className='max-w-fit'
                   >
                     {deleting ? 'در حال حذف...' : 'حذف کاربر'}
                   </Button>

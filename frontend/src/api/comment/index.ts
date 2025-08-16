@@ -81,3 +81,13 @@ export const setCommentStatus = async (
     throw new Error(response.statusText);
   }
 };
+
+export const addAnswer = async (auth: PrivateAuth, data: CommentArgs) => {
+  const privateAxios = createPrivateAxios(auth);
+  const response = await privateAxios.post(Endpoints.addAnswer, data);
+  if (response.status === 201) {
+    return response.data;
+  } else {
+    throw new Error(response.statusText);
+  }
+};

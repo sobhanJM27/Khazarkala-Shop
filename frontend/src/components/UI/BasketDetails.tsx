@@ -40,7 +40,12 @@ const BasketDetails = ({
         )}
       >
         <span>تعداد محصول‌ها</span>
-        <span>{toPersianNumbers(listProduct.length || 0, true)}</span>
+        <span>
+          {toPersianNumbers(
+            listProduct.reduce((total, p) => total + (p.count || 1), 0),
+            true
+          )}
+        </span>
       </div>
       {itemDetails.map((item, id) => {
         return (

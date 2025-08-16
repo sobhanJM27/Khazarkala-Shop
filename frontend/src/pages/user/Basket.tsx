@@ -12,14 +12,17 @@ import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import BasketProducts from '../../components/UI/BasketProducts';
 import Tick from '../../components/UI/icons/Tick';
-import { checkCode } from '../../api';
+import { checkCode, getUserAddress } from '../../api';
 import toast from 'react-hot-toast';
 import BasketDetails from '../../components/UI/BasketDetails';
 import { updateProduct } from '../../redux/basketSlice';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const Basket = () => {
   const [products, setProducts] = useState<Product[]>([]);
+
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -30,35 +33,70 @@ const Basket = () => {
   const { token } = useAuth();
   const authHooks = useAuthHooks();
   const basketData = useAppSelector((state) => state.basket);
-  const { data, isError, isLoading, error } = useQuery({
-    queryKey: ['basket', basketData.productsId],
-    queryFn: () => updateBasket({ token, ...authHooks }, basketData.productsId),
-  });
-
-  useEffect(() => {
-    if (data) {
-      setProducts(data);
-    }
-  }, [data]);
-
-  const handleBasket = async (productId: string) => {
-    const newProducts = products.filter((product) => product._id !== productId);
-    dispatch(
-      updateProduct({
-        productsId: newProducts.map((product) => product._id),
-        qty: newProducts.length,
-      })
-    );
-    toast.success('محصول با موفقیت از سبد خرید شما حذف شد');
-    setProducts(newProducts);
-  };
+  const productIds = basketData.products.map((p) => p.id);
 
   const totalPrice = products.reduce(
-    (total: number, product: Product) => total + product.priceAfterDiscount,
+    (total: number, product: Product) =>
+      total + product.priceAfterDiscount * (product.count || 1),
     0
   );
   const totalDiscount = discountResult;
   const totalPriceWithDiscount = Math.max(0, totalPrice - totalDiscount);
+
+  const { data, isError, isLoading, error } = useQuery({
+    queryKey: ['basket', productIds],
+    queryFn: () => updateBasket({ token, ...authHooks }, productIds),
+  });
+
+  useEffect(() => {
+    if (data) {
+      const mergedProducts = data.map((product: { _id: string }) => {
+        const localProduct = basketData.products.find(
+          (p) => p.id === product._id
+        );
+        return {
+          ...product,
+          count: localProduct ? localProduct.count : 1,
+        };
+      });
+
+      setProducts(mergedProducts);
+    }
+  }, [data, basketData.products]);
+
+  const handleBasket = async (productId: string) => {
+    const productInRedux = basketData.products.find((p) => p.id === productId);
+
+    if (!productInRedux) return;
+
+    if (productInRedux.count > 1) {
+      dispatch(
+        updateProduct({
+          products: basketData.products.map((p) =>
+            p.id === productId ? { ...p, count: p.count - 1 } : p
+          ),
+        })
+      );
+
+      setProducts((prev) =>
+        prev.map((p) =>
+          p._id === productId ? { ...p, count: p.count - 1 } : p
+        )
+      );
+
+      toast.success('یک عدد از محصول کم شد');
+    } else {
+      dispatch(
+        updateProduct({
+          products: basketData.products.filter((p) => p.id !== productId),
+        })
+      );
+
+      setProducts((prev) => prev.filter((p) => p._id !== productId));
+
+      toast.success('محصول با موفقیت از سبد خرید حذف شد');
+    }
+  };
 
   const handleCheckCode = async () => {
     setDiscountLoading(true);
@@ -85,15 +123,28 @@ const Basket = () => {
 
   const handlePurchase = async () => {
     try {
-      const paymentResponse = await Payment(
-        { token, ...authHooks },
-        basketData.productsId
-      );
-      console.log(paymentResponse.gatewayURL);
-      if (paymentResponse.code === 100) {
-        window.location.href = paymentResponse.gatewayURL;
+      const address = await getUserAddress({ token, ...authHooks });
+
+      if (
+        address &&
+        address.province &&
+        address.city &&
+        address.postalCode &&
+        address.street &&
+        address.detail
+      ) {
+        const paymentResponse = await Payment(
+          { token, ...authHooks },
+          basketData.products.map((p) => p.id)
+        );
+        if (paymentResponse.code === 100) {
+          window.location.href = paymentResponse.gatewayURL;
+        } else {
+          toast.error('خطا در پرداخت. لطفا دوباره تلاش کنید.');
+        }
       } else {
-        toast.error('خطا در پرداخت. لطفا دوباره تلاش کنید.');
+        navigate('../address');
+        toast.error('لطفا ابتدا آدرس خود را وارد کنید.');
       }
     } catch (error) {
       console.error('Error during payment:', error);

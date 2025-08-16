@@ -19,6 +19,7 @@ import {
 } from './model/zarinpal.model';
 import createHttpError from 'http-errors';
 import { invoiceNumberGenerator } from './../../common/functions/globalFunction';
+import { OrderDetailResponse } from './dto/order.dto';
 
 class PaymentService {
   constructor(
@@ -140,24 +141,41 @@ class PaymentService {
     }
   }
 
-  async getAuthority(authority: string, userID: string) {
+  async getAuthority(
+    authority: string,
+    userID: string
+  ): Promise<OrderDetailResponse> {
     const payment = await this.paymentRepository.findOne({ authority });
-    const sale = await this.saleRepositoy.findOne({ payment: payment._id });
-    const product = sale.productID;
-    const listProduct = [];
-    for (var i = 0; i < product.length; i++) {
-      const findProduct = await this.productRepository.findOne({
-        _id: product[i].product,
+    if (!payment) throw createHttpError.NotFound('پرداخت پیدا نشد');
+
+    const sale = await this.saleRepositoy.findOne({
+      payment: payment._id,
+      userID,
+    });
+    if (!sale) throw createHttpError.NotFound('سفارش یافت نشد');
+
+    const productList = [];
+    for (const item of sale.productID) {
+      const product = await this.productRepository.findOne({
+        _id: item.product,
       });
-      if (findProduct)
-        listProduct.push({
-          title: findProduct.title,
-          image: findProduct.images,
-          priceAfterDiscount: findProduct.priceAfterDiscount,
-          count: product[i].count,
+      if (product) {
+        productList.push({
+          title: product.title,
+          image: product.images,
+          priceAfterDiscount: product.priceAfterDiscount,
+          count: item.count,
         });
+      }
     }
-    return { listProduct };
+
+    return {
+      invoiceNumber: payment.invoiceNumber,
+      authority: payment.authority,
+      amount: payment.amount,
+      verify: payment.verify,
+      products: productList,
+    };
   }
 
   async updateBasket(updateDto: UpdateDto) {

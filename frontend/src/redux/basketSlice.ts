@@ -1,49 +1,53 @@
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import { setToStorage } from "../utils/localStorage";
+import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { setToStorage } from '../utils/localStorage';
 
 export interface BasketState {
-  productsId: string[];
-  qty: number;
+  products: { id: string; count: number }[];
 }
 
-type AddPayload = {
-  id: string;
-};
-type UpdatePayload = BasketState;
-
-type RemovePayload = {
-  id: string;
-};
-
 const initialState: BasketState = {
-  productsId: [],
-  qty: 0,
+  products: [],
 };
 
 export const basketSlice = createSlice({
-  name: "cart",
+  name: 'cart',
   initialState,
   reducers: {
-    addToBasket: (state, action: PayloadAction<AddPayload>) => {
-      const newId = action.payload.id;
-      state.productsId.find((id) => id === newId) ||
-        state.productsId.push(newId);
-      state.qty += 1;
+    addToBasket: (
+      state,
+      action: PayloadAction<{ id: string; count?: number }>
+    ) => {
+      const { id, count = 1 } = action.payload;
+      const existingProduct = state.products.find((p) => p.id === id);
 
-      setToStorage("products", JSON.stringify(state.productsId));
+      if (existingProduct) {
+        existingProduct.count += 1;
+      } else {
+        state.products.push({ id, count });
+      }
+
+      setToStorage('products', JSON.stringify(state.products));
     },
-    removeProduct: (state, action: PayloadAction<RemovePayload>) => {
-      state.productsId = state.productsId.filter(
-        (id) => id !== action.payload.id
-      );
-      state.qty -= 1;
-      setToStorage("products", JSON.stringify(state.productsId));
+    removeProduct: (
+      state,
+      action: PayloadAction<{ id: string; count?: number }>
+    ) => {
+      const { id, count = 1 } = action.payload;
+      const existingProduct = state.products.find((p) => p.id === id);
+
+      if (existingProduct) {
+        existingProduct.count -= count;
+        if (existingProduct.count <= 0) {
+          state.products = state.products.filter((p) => p.id !== id);
+        }
+      }
+
+      setToStorage('products', JSON.stringify(state.products));
     },
-    updateProduct: (state, action: PayloadAction<UpdatePayload>) => {
-      state.productsId = action.payload.productsId;
-      state.qty = action.payload.qty;
-      setToStorage("products", JSON.stringify(state.productsId));
+    updateProduct: (state, action: PayloadAction<BasketState>) => {
+      state.products = action.payload.products;
+      setToStorage('products', JSON.stringify(state.products));
     },
   },
 });

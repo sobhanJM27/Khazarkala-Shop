@@ -53,7 +53,7 @@ const Add = () => {
       <div className='flex flex-col gap-6'>
         <input type='text' placeholder='عنوان' ref={titleRef} />
         <input type='text' placeholder='متن کوتاه' ref={shortTextRef} />
-        <input type='text' placeholder='ایدی دسته بندی ها' ref={categoryRef} />
+        <input type='text' placeholder='عنوان دسته بندی ها' ref={categoryRef} />
         <input type='text' placeholder='شماره ترتیب' ref={sortRef} />
         <input type='text' placeholder='عکس ها' ref={imagesRef} />
         <textarea
@@ -118,7 +118,7 @@ const Add = () => {
           ref={textRef}
         ></textarea>
         <input type='number' placeholder='قیمت اصلی محصول' ref={priceRef} />
-        <input type='text' placeholder='ایدی دسته بندی ها' ref={categoryRef} />
+        <input type='text' placeholder='عنوان دسته بندی ها' ref={categoryRef} />
         <input type='number' placeholder='درصد تخفیف' ref={discountRef} />
         <input type='text' placeholder='عکس ها' ref={imagesRef} />
         <input type='text' placeholder='شماره ترتیب' ref={sortRef} />

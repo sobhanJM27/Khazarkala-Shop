@@ -5,7 +5,6 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { ObjectId } from 'mongoose';
 
 export class ProductDto {
   @IsString()
@@ -29,7 +28,8 @@ export class ProductDto {
   @IsNumber()
   priceAfterDiscount: number;
 
-  category: ObjectId;
+  @IsArray()
+  category: Array<string>;
 
   @IsArray()
   images: Array<string>;

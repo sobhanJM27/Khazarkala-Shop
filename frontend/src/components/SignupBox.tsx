@@ -1,20 +1,20 @@
-import { useRef, useState } from "react";
-import Input from "./UI/Input";
-import Button from "./UI/Button";
-import { ConfirmOTP } from "./ConfirmOTP";
-import { cn } from "../utils/lib/cn";
-import { useCountdown } from "../hooks/useCountdown";
-import { booleanStateHandleType } from "../types/stateFnsTypes";
-import toast from "react-hot-toast";
-import inputValidator from "../utils/inputValidator";
-import { register, registerOtp, resetCode } from "../api/auth";
-import { useQueryClient } from "@tanstack/react-query";
-import { setCookie } from "../utils/cookie";
-import axios from "axios";
-import { Roles } from "../types/auth";
-import { useAppDispatch } from "../hooks/useReduxHooks";
-import { logIn } from "../redux/userSlice";
-import { useNavigate } from "react-router-dom";
+import { useRef, useState } from 'react';
+import Input from './UI/Input';
+import Button from './UI/Button';
+import { ConfirmOTP } from './ConfirmOTP';
+import { cn } from '../utils/lib/cn';
+import { useCountdown } from '../hooks/useCountdown';
+import { booleanStateHandleType } from '../types/stateFnsTypes';
+import toast from 'react-hot-toast';
+import inputValidator from '../utils/inputValidator';
+import { register, registerOtp, resetCode } from '../api/auth';
+import { useQueryClient } from '@tanstack/react-query';
+import { setCookie } from '../utils/cookie';
+import axios from 'axios';
+import { Roles } from '../types/auth';
+import { useAppDispatch } from '../hooks/useReduxHooks';
+import { logIn } from '../redux/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const SignupBox = () => {
   const [btnDisabled, setBtnDisabled] = useState(false);
@@ -31,12 +31,12 @@ const SignupBox = () => {
     btnStateHandler: booleanStateHandleType,
     isReset?: boolean
   ) => {
-    const phoneMsg = inputValidator(phoneRef.current?.value, "phone");
+    const phoneMsg = inputValidator(phoneRef.current?.value, 'phone');
     if (phoneMsg) {
       toast.error(phoneMsg);
       return;
     }
-    const loader = toast.loading("در حال ارسال کد");
+    const loader = toast.loading('در حال ارسال کد');
     try {
       isReset
         ? await resetCode(phoneRef.current!.value)
@@ -45,12 +45,11 @@ const SignupBox = () => {
       startCounter();
       btnStateHandler(false);
     } catch (error) {
-      console.log(error);
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
         return;
       }
-      toast.error("خطا در ارسال کد");
+      toast.error('خطا در ارسال کد');
     } finally {
       toast.dismiss(loader);
     }
@@ -59,12 +58,12 @@ const SignupBox = () => {
     Otp: string,
     btnStateHandler: booleanStateHandleType
   ) => {
-    const codeMsg = inputValidator(Otp, "number");
+    const codeMsg = inputValidator(Otp, 'number');
     if (codeMsg) {
       toast.error(codeMsg);
       return;
     }
-    const loader = toast.loading("در حال ارسال اطلاعات");
+    const loader = toast.loading('در حال ارسال اطلاعات');
     try {
       const res = await register({
         first_name: firstNameRef.current!.value,
@@ -73,11 +72,11 @@ const SignupBox = () => {
         phone: phoneRef.current!.value,
         code: Otp,
       });
-      setCookie("win_token", res.refreshToken, {
-        path: "/",
+      setCookie('win_token', res.refreshToken, {
+        path: '/',
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         secure: true,
-        sameSite: "lax",
+        sameSite: 'lax',
       });
       dispatch(
         logIn({
@@ -87,14 +86,15 @@ const SignupBox = () => {
         })
       );
       queryClient.invalidateQueries();
-      Navigate("/dashboard");
+      Navigate('/dashboard');
+      // window.location.reload();
     } catch (error) {
       console.log(error);
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
         return;
       }
-      toast.error("خطا در برقراری ارتباط");
+      toast.error('خطا در برقراری ارتباط');
     } finally {
       toast.dismiss(loader);
       btnStateHandler(false);
@@ -118,43 +118,43 @@ const SignupBox = () => {
       />
       <div
         className={cn(
-          "hidden flex-col gap-2",
-          !showOtp && "animate-fade-in flex"
+          'hidden flex-col gap-2',
+          !showOtp && 'animate-fade-in flex'
         )}
       >
         <h1>ثبت نام</h1>
         <Input
-          id="first_name"
-          label="نام"
-          intent={"primary"}
-          inputSize="base"
+          id='first_name'
+          label='نام'
+          intent={'primary'}
+          inputSize='base'
           ref={firstNameRef}
         />
         <Input
-          id="last_name"
-          label="نام خانوادگی"
-          intent={"primary"}
-          inputSize="base"
+          id='last_name'
+          label='نام خانوادگی'
+          intent={'primary'}
+          inputSize='base'
           ref={lastNameRef}
         />
         <Input
-          id="email"
-          label="ایمیل"
-          intent={"primary"}
-          inputSize="base"
+          id='email'
+          label='ایمیل'
+          intent={'primary'}
+          inputSize='base'
           ref={emailRef}
         />
         <Input
-          id="phone"
-          label="شماره موبایل"
-          intent={"primary"}
-          inputSize="base"
+          id='phone'
+          label='شماره موبایل'
+          intent={'primary'}
+          inputSize='base'
           ref={phoneRef}
         />
         <Button
-          intent={"tertiary"}
-          size={"base"}
-          className="py-4"
+          intent={'tertiary'}
+          size={'base'}
+          className='py-4'
           disabled={btnDisabled}
           onClick={() => handleSendOtp(setBtnDisabled)}
         >

@@ -19,77 +19,69 @@ class ProductService {
   constructor(
     private readonly productModel = ProductModel<IProduct>,
     private readonly categoryModel = CategoryModel<ICategory>,
-    private readonly codeRepository = CodeDiscountModel<ICodeDisCount>,
-    private readonly userRepository = UserModel<IUser>
+    private readonly codeRepository = CodeDiscountModel<ICodeDisCount>
   ) {}
 
-  async createProduct(product: ProductDto): Promise<object> {
-    if (product.discount > 0 && product.discount != 0) {
-      const add = (product.discount * product.price) / 100;
-      product.priceAfterDiscount = product.price - add;
-      product.priceAfterDiscount =
-        Math.floor(product.priceAfterDiscount / 10000) * 10000;
-    } else {
-      product.priceAfterDiscount = product.price;
-      product.priceAfterDiscount =
-        Math.floor(product.priceAfterDiscount / 10000) * 10000;
+  private calculatePrice(price: number, discount: number): number {
+    let finalPrice = price;
+    if (discount > 0) {
+      const discountAmount = (discount * price) / 100;
+      finalPrice = price - discountAmount;
     }
+    return Math.floor(finalPrice / 10000) * 10000;
+  }
 
-    let category = await this.categoryModel.findOne({ title: product.category });
+  async createProduct(product: ProductDto): Promise<object> {
+    const category = await this.categoryModel.findById(product.category);
+    if (!category) throw NotFound(AuthMessageError.NotFound);
+
+    const priceAfterDiscount = this.calculatePrice(
+      product.price,
+      product.discount
+    );
+
     await this.productModel.create({
-      title: product.title,
-      Description: product.Description,
-      shortText: product.shortText,
-      price: product.price,
-      discount: product.discount,
-      priceAfterDiscount: product.priceAfterDiscount,
+      ...product,
+      priceAfterDiscount,
       category: category.title,
-      images: product.images,
-      comments: product.comments,
       createdAt: new Date(),
-      sortByNumber: product.sortByNumber,
     });
+
     return { message: 'محصول با موفقیت اضافه شد' };
   }
 
   async updateProduct(id: string, product: ProductDto): Promise<object> {
     await this.findOneProduct(id);
 
-    if (product.discount > 0 && product.discount != 0) {
-      const add = (product.discount * product.price) / 100;
-      product.priceAfterDiscount = product.price - add;
-      product.priceAfterDiscount =
-        Math.floor(product.priceAfterDiscount / 10000) * 10000;
-    } else {
-      product.priceAfterDiscount = product.price;
-      product.priceAfterDiscount =
-        Math.floor(product.priceAfterDiscount / 10000) * 10000;
-    }
+    const category = await this.categoryModel.findById(product.category);
+    if (!category) throw NotFound(AuthMessageError.NotFound);
+
+    const priceAfterDiscount = this.calculatePrice(
+      product.price,
+      product.discount
+    );
 
     await this.productModel.updateOne(
       { _id: id },
       {
         $set: {
-          title: product.title,
-          Description: product.Description,
-          shortText: product.shortText,
-          price: product.price,
-          discount: product.discount,
-          priceAfterDiscount: product.priceAfterDiscount,
-          category: product.category,
-          images: product.images,
-          comments: product.comments,
-          createdAt: new Date(),
-          sortByNumber: product.sortByNumber,
+          ...product,
+          priceAfterDiscount,
+          category: category.title,
+          updatedAt: new Date(),
         },
       }
     );
-    return { message: 'محصول با موفقیت اپدیت شد' };
+
+    return { message: 'محصول با موفقیت آپدیت شد' };
   }
 
   async deleteProduct(id: string): Promise<object> {
-    await this.productModel.deleteOne({ _id: id });
-    return { status: 200, message: 'محصول با موفقیت حذف شد' };
+    const result = await this.productModel.deleteOne({ _id: id });
+    if (result.deletedCount === 0) {
+      throw NotFound(AuthMessageError.NotFound);
+    }
+    return { message: 'محصول با موفقیت حذف شد' };
   }
 
   async findProduct(id: string): Promise<IProduct> {
@@ -113,53 +105,21 @@ class ProductService {
     return product;
   }
 
-  async findOneProduct(id: string): Promise<IProduct> {
-    const product = await this.productModel.findOne({ _id: id }).populate({
-      path: 'comments',
-      populate: [
-        {
-          path: 'userID',
-          select: 'first_name last_name',
-        },
-        {
-          path: 'answer',
-          populate: {
-            path: 'userID',
-          },
-        },
-      ],
-    });
+  async findOneProduct(id: string): Promise<any> {
+    const product = await this.findProduct(id);
 
-    if (!product) throw NotFound(AuthMessageError.NotFound);
-    // find blog related
-    const CategoryProduct = await this.productModel.find({
-      category: product.category,
-    });
-    const findProduct = copyObject(product);
-    let relates = [];
-    for (let i = 0; i < CategoryProduct.length; i++) {
-      if (CategoryProduct[i]._id == id) {
-        continue;
-      } else {
-        relates.push(CategoryProduct[i]);
-      }
-    }
-    findProduct['related'] = relates;
+    const related = await this.productModel
+      .find({ category: product.category, _id: { $ne: id } })
+      .limit(5);
 
-    const result = await this.productModel.find({}).sort({ createdAt: -1 });
-    let latest = [];
-    for (let i = 0; i < result.length; i++) {
-      if (i == 5) break;
-      latest.push(result[i]);
-    }
-    findProduct['latest'] = latest;
+    const latest = await this.productModel
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(5);
 
-    const view = await this.productModel.updateOne(
-      { _id: id },
-      { $inc: { view: 1 } }
-    );
+    await this.productModel.updateOne({ _id: id }, { $inc: { view: 1 } });
 
-    return findProduct;
+    return { ...product.toObject(), related, latest };
   }
 
   async findAllProduct(
@@ -185,10 +145,10 @@ class ProductService {
     if (isSortSet) {
       switch (sort) {
         case 'latest':
-          sortOption = { createdAt: 1 };
+          sortOption = { createdAt: -1 };
           break;
         case 'oldest':
-          sortOption = { createdAt: -1 };
+          sortOption = { createdAt: 1 };
           break;
         case 'highest':
           sortOption = { price: -1 };

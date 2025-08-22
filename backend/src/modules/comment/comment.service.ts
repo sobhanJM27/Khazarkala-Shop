@@ -62,8 +62,6 @@ export class CommentService {
       throw createHttpError.ServiceUnavailable(
         GlobalMessageError.ServiceUnavailable
       );
-
-    // فقط _id رو push می‌کنیم، populate بعدا کامل می‌کنه
     await findComment.updateOne({ $push: { answer: createAnswer._id } });
 
     return createAnswer;
@@ -90,13 +88,25 @@ export class CommentService {
   }
 
   async removeComment(id: string): Promise<object> {
-    const findComment = await this.commentRepository.deleteOne({ _id: id });
-    if (findComment.deletedCount == 0) {
-      const findAnswer = await this.answerRepository.deleteOne({ _id: id });
-      if (findAnswer.deletedCount == 0)
-        throw createHttpError.NotFound(NotFoundError.NotFoundComment);
+    const comment = await this.commentRepository.findById(id);
+    if (comment) {
+      await this.answerRepository.deleteMany({ commentID: comment._id });
+      await this.commentRepository.deleteOne({ _id: id });
+      return { message: 'کامنت و تمام پاسخ‌های مربوطه با موفقیت حذف شدند' };
     }
-    return { message: 'کامنت با موفقیت حذف گردید' };
+
+    const answer = await this.answerRepository.findById(id);
+    if (answer) {
+      await this.commentRepository.updateOne(
+        { _id: answer.commentID },
+        { $pull: { answer: answer._id } }
+      );
+
+      await this.answerRepository.deleteOne({ _id: id });
+
+      return { message: 'پاسخ با موفقیت حذف شد' };
+    }
+    throw createHttpError.NotFound(NotFoundError.NotFoundComment);
   }
 
   async avrageStar(): Promise<number> {
@@ -154,7 +164,7 @@ export class CommentService {
     return comment;
   }
 
-  async readCommentForAsnswer(
+  async readCommentForAnswer(
     id: string,
     method: TypeEnumComment
   ): Promise<{ find: IBlog | IProduct }> {

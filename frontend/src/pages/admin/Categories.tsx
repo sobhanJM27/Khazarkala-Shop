@@ -116,7 +116,7 @@ const Categories = () => {
           {categories?.map(({ _id, title, type }, idx) => (
             <li
               key={_id}
-              className="flex flex-col gap-2 border-b border-main-primary-text p-4"
+              className="flex flex-col gap-2 border-b border-main-primary-text pb-4"
             >
               <div className="flex gap-2">
                 <span>آیدی</span>

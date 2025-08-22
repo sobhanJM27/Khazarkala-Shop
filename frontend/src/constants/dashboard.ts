@@ -1,10 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import Home from '../components/UI/icons/Home';
-import Course from '../components/UI/icons/Course';
 import Comment from '../components/UI/icons/Comment';
 import User from '../components/UI/icons/User';
 import LogOut from '../components/UI/icons/LogOut';
 import Support from '../components/UI/icons/Support';
+import ProductIcon from '../components/UI/icons/ProductIcon';
+import Address from '../components/UI/icons/Address';
 
 export const userNavItems = [
   {
@@ -17,7 +18,7 @@ export const userNavItems = [
     name: 'محصول‌های من',
     link: 'products',
     id: uuidv4(),
-    Icon: Course,
+    Icon: ProductIcon,
   },
   {
     name: 'نظرات من',
@@ -29,7 +30,7 @@ export const userNavItems = [
     name: 'آدرس من',
     link: 'address',
     id: uuidv4(),
-    Icon: Comment,
+    Icon: Address,
   },
   {
     name: 'پروفایل',

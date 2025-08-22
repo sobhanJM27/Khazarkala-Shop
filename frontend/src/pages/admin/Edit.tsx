@@ -64,15 +64,22 @@ const Edit = () => {
           defaultValue={details.shortText}
           ref={shortTextRef}
         />
+        <textarea
+          placeholder='مقاله ی خود را در فرمت مارکداون بنویسید'
+          cols={30}
+          rows={10}
+          defaultValue={details.description}
+          ref={textRef}
+        ></textarea>
         <input
           type='text'
-          placeholder='نام دسته بندی ها'
+          placeholder='نام دسته بندی'
           defaultValue={details.category.join(',')}
           ref={categoryRef}
         />
         <input
           type='text'
-          placeholder='عکس ها'
+          placeholder='عکس'
           ref={imagesRef}
           defaultValue={details.images.map((image) => image)}
         />
@@ -82,13 +89,6 @@ const Edit = () => {
           ref={sortRef}
           defaultValue={details.sortByNumber}
         />
-        <textarea
-          placeholder='مقاله ی خود را در فرمت مارکداون بنویسید'
-          cols={30}
-          rows={10}
-          defaultValue={details.description}
-          ref={textRef}
-        ></textarea>
         <input
           type='text'
           placeholder='نام نویسنده'
@@ -171,13 +171,13 @@ const Edit = () => {
         ></textarea>
         <input
           type='number'
-          placeholder='قیمت اصلی محصول'
+          placeholder='قیمت اصلی محصول به تومن'
           defaultValue={details.price}
           ref={priceRef}
         />
         <input
           type='text'
-          placeholder='نام دسته بندی ها'
+          placeholder='نام دسته بندی'
           defaultValue={details.category.join(',')}
           ref={categoryRef}
         />
@@ -189,7 +189,7 @@ const Edit = () => {
         />
         <input
           type='text'
-          placeholder='عکس ها'
+          placeholder='عکس'
           ref={imagesRef}
           defaultValue={details.images.map((image) => image)}
         />

@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { useAuth, useAuthHooks } from '../../hooks/useAuth';
 import { addImage, getImages, deleteImage } from '../../api';
 import Button from '../../components/UI/Button';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import WithLoaderAndError from '../../components/WithLoaderAndError';
 
 const Upload = () => {
@@ -11,6 +11,7 @@ const Upload = () => {
   const imagesRef = useRef<HTMLInputElement | null>(null);
   const { token } = useAuth();
   const auth = useAuthHooks();
+  const queryClient = useQueryClient();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['images'],
     queryFn: () => getImages({ token, ...auth }),
@@ -24,6 +25,7 @@ const Upload = () => {
         const res = await addImage({ token, ...auth }, images);
         toast.success('بارگذاری شد');
         setImgUrls([...res]);
+        queryClient.invalidateQueries({ queryKey: ['images'] });
       } catch (err) {
         console.log(err);
         toast.error('خطا در بارگذاری');

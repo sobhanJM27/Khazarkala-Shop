@@ -1,4 +1,4 @@
-import { IsEnum, IsMobilePhone, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsMobilePhone, IsString } from 'class-validator';
 import { CodeEnumMethod } from '../enum/method.enum';
 
 export class RegisterDto {
@@ -7,6 +7,7 @@ export class RegisterDto {
   @IsString()
   last_name: string;
   @IsString()
+  @IsEmail()
   email: string;
   @IsMobilePhone('fa-IR')
   phone: string;

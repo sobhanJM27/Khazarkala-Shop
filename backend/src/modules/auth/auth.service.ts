@@ -1,10 +1,9 @@
 import { Model } from 'mongoose';
-import { isEmail, isMobilePhone } from 'class-validator';
+import bcrypt from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { IUser, UserModel } from '../user/model/user.model';
 import {
   Conflict,
-  BadRequest,
   NotFound,
   Unauthorized,
   ServiceUnavailable,
@@ -97,8 +96,10 @@ class AuthService {
     const { phone, code } = checkDto;
     const existUser = await this.userRepository.findOne({ phone });
     if (!existUser) throw NotFound(AuthMessageError.NotFound);
-    if (code !== existUser.otp.code)
+    const isMatch = await bcrypt.compare(code, existUser.otp.code);
+    if (!isMatch) {
       throw Unauthorized(AuthMessageError.UnauthorizedCode);
+    }
     const date = Date.now();
     if (existUser.otp.expiresIn < date)
       throw Unauthorized(AuthMessageError.UnauthorizedExpires);
@@ -129,7 +130,7 @@ class AuthService {
 
   async refreshToken(tokenDto: TokenDto) {
     const { token } = tokenDto;
-    const verifyRefreshToken: any = await VerifyRefreshToken(token);
+    const verifyRefreshToken: string = await VerifyRefreshToken(token);
     const findUser = await this.userRepository.findOne({
       _id: verifyRefreshToken,
     });
@@ -155,26 +156,16 @@ class AuthService {
 
   async generateCodeAndUpdateUserOtp(user: IUser) {
     const code = randomNumber();
+    const hashedCode = await bcrypt.hash(code, 10);
+    const expiresIn = Date.now() + 2 * 60 * 1000;
     const updateUser = await user.updateOne({
-      $set: { otp: { code, expirseIn: 12000 } },
+      $set: { otp: { hashedCode, expirseIn: expiresIn } },
     });
     if (updateUser.modifiedCount == 0)
       throw ServiceUnavailable(GlobalMessageError.ServiceUnavailable);
     await user.save();
-    await this.sendPhoneCode(code, user.phone);
-    return { message: 'کد با موفقیت برای شما ارسال شد', code };
-  }
-
-  async usernameValidation(phone?: string, email?: string) {
-    if (email) {
-      if (isEmail(email)) return email;
-      throw BadRequest(GlobalMessageError.BadRequest);
-    } else if (phone) {
-      if (isMobilePhone(phone, 'fa-IR')) return phone;
-      throw BadRequest(GlobalMessageError.BadRequest);
-    } else {
-      throw BadRequest(GlobalMessageError.BadRequest);
-    }
+    await this.sendPhoneCode(hashedCode, user.phone);
+    return { message: 'کد با موفقیت برای شما ارسال شد' };
   }
 
   async userExist(phone?: string, email?: string, id?: string): Promise<IUser> {

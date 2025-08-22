@@ -32,6 +32,7 @@ export class Server {
     const allowedOrigins = [
       'http://localhost:5173',
       'https://hyperkala-frontend.liara.run',
+      'https://khazarkalaa.ir',
     ];
 
     this.appServer.use(

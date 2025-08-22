@@ -38,7 +38,7 @@ const Products = () => {
             return (
               <li
                 key={item._id}
-                className='flex flex-col border-b-2 border-black'
+                className='flex flex-col border-b border-main-primary-text pb-4'
               >
                 <Link to={url} className='text-blue max-w-fit'>
                   صفحه ی محصول

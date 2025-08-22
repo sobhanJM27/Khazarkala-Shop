@@ -12,7 +12,7 @@ import { IUser } from '../user/model/user.model';
 export class AuthController {
   async registerStepOne(req: Request, res: Response, next: NextFunction) {
     try {
-      const { phone } = req.body;
+      const { phone } = req.body
       const result: object = await AuthService.registerStepOne(phone);
       return res.status(201).json(result);
     } catch (error) {
@@ -27,12 +27,8 @@ export class AuthController {
   ) {
     try {
       const body: RegisterDto = req.body;
-      // const userID = req.user
-      const userID = { _id: '3134134' };
-      const result: object = await AuthService.registerStepTwo(
-        body,
-        // userID._id
-      );
+
+      const result: object = await AuthService.registerStepTwo(body);
       return res.status(201).json(result);
     } catch (error) {
       next(error);

@@ -47,6 +47,7 @@ class BlogService {
           category: blog.category,
           createdAt: new Date(),
           author: blog.author,
+          updatedAt: new Date(),
         },
       }
     );
@@ -55,8 +56,8 @@ class BlogService {
 
   async deleteBlog(id: string): Promise<object> {
     await this.findBlog(id);
-    let result = await this.blogModel.deleteOne({ _id: id });
-    return { message: 'با موفقیت حذف شد', result };
+    await this.blogModel.deleteOne({ _id: id });
+    return { message: 'با موفقیت حذف شد' };
   }
 
   async findBlog(id: string): Promise<IBlog> {
@@ -85,79 +86,46 @@ class BlogService {
     });
 
     if (!blog) throw NotFound(AuthMessageError.NotFound);
-    // find blog related
-    const CategoryBlog = await this.blogModel.find({ category: blog.category });
-    const findblog = copyObject(blog);
-    let relates = [];
-    for (let i = 1; i < CategoryBlog.length; i++) {
-      relates.push(CategoryBlog[i]);
-    }
-    findblog['related'] = relates;
-    const result = await this.blogModel.find({}).sort({ createdAt: -1 });
-    let latest = [];
-    for (let i = 0; i < result.length; i++) {
-      if (i == 5) break;
-      latest.push(result[i]);
-    }
-    findblog['latest'] = latest;
+
+    const categoryBlogs = await this.blogModel.find({
+      category: blog.category,
+    });
+    const related = categoryBlogs
+      .filter((b) => b._id.toString() !== id)
+      .slice(0, 5);
+
+    const latest = await this.blogModel.find().sort({ createdAt: -1 }).limit(5);
+
     await this.blogModel.updateOne({ _id: id }, { $inc: { view: 1 } });
 
-    return findblog;
+    return Object.assign(blog.toObject(), { related, latest });
   }
 
   async findAllBlog(
-    categoryId: string,
+    categoryId: string | undefined,
     limit: number,
-    filter: string
-  ): Promise<Object> {
-    let result: Array<object>;
+    filter: string | undefined
+  ): Promise<IBlog[]> {
+    const query: any = {};
+    let sort: any = {};
 
-    if (categoryId !== 'undefined' && filter == 'latest') {
-      let category = await this.categoryModel.findOne({ _id: categoryId });
-      const blogs = await this.blogModel
-        .find({ category: category.title })
-        .limit(limit)
-        .sort({ createdAt: -1 });
-      result = blogs;
-    } else if (categoryId !== 'undefined' && filter == 'oldest') {
-      let category = await this.categoryModel.findOne({ _id: categoryId });
-      const blogs = await this.blogModel
-        .find({ category: category.title })
-        .limit(limit)
-        .sort({ createdAt: +1 });
-      result = blogs;
-    } else if (categoryId !== 'undefined' && filter == 'undefined') {
-      let category = await this.categoryModel.findOne({ _id: categoryId });
-      const blogs = await this.blogModel
-        .find({ category: category.title })
-        .limit(limit);
-      result = blogs;
-    } else if (categoryId == 'undefined' && filter) {
-      let blogs;
-      if (filter == 'latest') {
-        blogs = await this.blogModel
-          .find({})
-          .limit(limit)
-          .sort({ createdAt: 1 });
-      } else if (filter == 'oldest') {
-        blogs = await this.blogModel
-          .find({})
-          .limit(limit)
-          .sort({ createdAt: -1 });
-      } else {
-        blogs = await this.blogModel
-          .find({})
-          .limit(limit)
-          .sort({ numberLike: +1 });
-      }
-
-      result = blogs;
-    } else if (categoryId !== 'undefined' && filter == 'undefined') {
-      const AllBlog = await this.blogModel.find({}).limit(limit);
-      if (!AllBlog) throw NotFound(AuthMessageError.NotFound);
-      result = AllBlog;
+    if (categoryId && categoryId !== 'undefined') {
+      const category = await this.categoryModel.findById(categoryId);
+      if (!category) throw NotFound(AuthMessageError.NotFound);
+      query.category = category._id;
     }
-    return result;
+
+    if (filter === 'latest') sort.createdAt = -1;
+    else if (filter === 'oldest') sort.createdAt = 1;
+
+    const blogs = await this.blogModel
+      .find(query)
+      .limit(limit)
+      .sort(sort)
+      .lean();
+    if (!blogs.length) throw NotFound(AuthMessageError.NotFound);
+
+    return blogs;
   }
 }
 

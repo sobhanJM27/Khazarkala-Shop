@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import Home from "../components/UI/icons/Home";
-import Course from "../components/UI/icons/Course";
+import Course from "../components/UI/icons/ProductIcon";
 import Article from "../components/UI/icons/Article";
 import User from "../components/UI/icons/User";
 

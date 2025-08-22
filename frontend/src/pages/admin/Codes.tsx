@@ -61,7 +61,7 @@ const Codes = () => {
         <ul className='flex flex-col gap-6'>
           {!isLoading &&
             data?.map(({ _id, code, discount }) => (
-              <li key={_id} className='flex flex-col gap-3'>
+              <li key={_id} className='flex flex-col gap-3 border-b border-main-primary-text pb-4'>
                 <span>کد: {code}</span>
                 <span>تخفیف: {toPersianNumbers(discount, true)}</span>
                 <div className='flex gap-4'>
@@ -74,7 +74,6 @@ const Codes = () => {
                     حذف
                   </Button>
                 </div>
-                <hr className='bg-main-brown-800 h-1 w-auto' />
               </li>
             ))}
         </ul>

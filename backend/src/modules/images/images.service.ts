@@ -10,7 +10,7 @@ class ImageService {
     images: string[]
   ): Promise<{ message: string; urlImage: string[] }> {
     const urlImage = images.map(
-      (image) => `${process.env.BACKEND_URL}${image.replace(/^\/+/, '')}`
+      (image) => `${process.env.LIARA_BACKEND_URL}${image.replace(/^\/+/, '')}`
     );
 
     await this.imagesModel.create({
@@ -30,10 +30,10 @@ class ImageService {
     return images.map((item) => ({
       ...item.toObject(),
       images: item.images.map(
-        (path) => `${process.env.BACKEND_URL}${path.replace(/\\/g, '/')}`
+        (path) => `${process.env.LIARA_BACKEND_URL}${path.replace(/\\/g, '/')}`
       ),
       urlImage: item.urlImage?.map(
-        (url) => `${process.env.BACKEND_URL}${url.replace(/\\/g, '/')}`
+        (url) => `${process.env.LIARA_BACKEND_URL}${url.replace(/\\/g, '/')}`
       ),
     }));
   }

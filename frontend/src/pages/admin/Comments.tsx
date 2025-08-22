@@ -7,7 +7,7 @@ import {
   setCommentStatus,
 } from '../../api/comment';
 import { Comment } from '../../types/apiTypes';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { statusMapper } from '../../utils/commentStatus';
 import WithLoaderAndError from '../../components/WithLoaderAndError';
@@ -25,18 +25,15 @@ const ManageComments = () => {
   const [comments, setComments] = useState(state?.comments ?? []);
   const { token } = useAuth();
   const auth = useAuthHooks();
+  const queryClient = useQueryClient();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['comments'],
     queryFn: () => getAllComments({ token, ...auth }),
   });
 
-  console.log(data);
-
   useEffect(() => {
     if (data) setComments(data);
   }, [data]);
-
-  console.log(data);
 
   const handleCommentStatus = async (commentId: string, status: boolean) => {
     try {
@@ -44,6 +41,7 @@ const ManageComments = () => {
         ? await setCommentStatus({ token, ...auth }, commentId, status)
         : await deleteComment({ token, ...auth }, commentId);
       toast.success('موفقیت آمیز');
+      queryClient.invalidateQueries({ queryKey: ['comments'] });
     } catch (error) {
       console.log(error);
       toast.error('خطا در برقراری ارتباط');
@@ -63,7 +61,10 @@ const ManageComments = () => {
             productID,
             answer,
           }) => (
-            <li key={_id} className='flex flex-col gap-2'>
+            <li
+              key={_id}
+              className='flex flex-col gap-2 border-b border-main-primary-text pb-4'
+            >
               <span>تاریخ : {toPersianDate(createdAt)}</span>
               <span>
                 برای محصول/مقاله : {productID?.title || blogID?.title}
@@ -120,8 +121,6 @@ const ManageComments = () => {
                   </div>
                 </div>
               ))}
-
-              <hr className='bg-main-brown-800 h-1 w-auto mt-2' />
             </li>
           )
         )}

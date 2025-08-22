@@ -25,7 +25,7 @@ class CategoryController {
     try {
       const category: CategoryDto = req.body;
       const { id } = req.params;
-      const result = await categoryServices.updateCategoy(id, category);
+      const result = await categoryServices.updateCategory(id, category);
       return res.status(200).json(result);
     } catch (error) {
       next(error);
@@ -53,7 +53,7 @@ class CategoryController {
   ): Promise<Response> {
     try {
       const { nameParent } = req.body;
-      const result = await categoryServices.getChildern(nameParent);
+      const result = await categoryServices.getChildren(nameParent);
       return res.status(200).json(result);
     } catch (error) {
       next(error);

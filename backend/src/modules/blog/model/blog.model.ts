@@ -1,8 +1,6 @@
 import mongoose, { ObjectId } from 'mongoose';
 
 interface IBlog extends mongoose.Document {
-  // find(arg0: { category: Array<ObjectId>; _id: { $ne: string } }): unknown;
-  // findById(id: string): unknown;
   title: string;
   description: string;
   shortText: string;

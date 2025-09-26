@@ -45,7 +45,8 @@ The project includes both **backend** and **frontend** parts, providing a full-f
 
 ## 🛠️ Installation
 
-### 1. Clone the repository
+### 1. Install and Run
 ```bash
-git clone https://github.com/<USERNAME>/<REPO>.git
-cd <REPO>
+cd frontend
+npm install
+npm run dev

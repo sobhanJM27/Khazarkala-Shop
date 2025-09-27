@@ -1,5 +1,4 @@
 import { Model } from 'mongoose';
-import bcrypt from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { IUser, UserModel } from '../user/model/user.model';
 import {
@@ -96,10 +95,6 @@ class AuthService {
     const { phone, code } = checkDto;
     const existUser = await this.userRepository.findOne({ phone });
     if (!existUser) throw NotFound(AuthMessageError.NotFound);
-    const isMatch = await bcrypt.compare(code, existUser.otp.code);
-    if (!isMatch) {
-      throw Unauthorized(AuthMessageError.UnauthorizedCode);
-    }
     const date = Date.now();
     if (existUser.otp.expiresIn < date)
       throw Unauthorized(AuthMessageError.UnauthorizedExpires);
@@ -156,15 +151,14 @@ class AuthService {
 
   async generateCodeAndUpdateUserOtp(user: IUser) {
     const code = randomNumber();
-    const hashedCode = await bcrypt.hash(code, 10);
     const expiresIn = Date.now() + 2 * 60 * 1000;
     const updateUser = await user.updateOne({
-      $set: { otp: { hashedCode, expirseIn: expiresIn } },
+      $set: { otp: { code, expiresIn } },
     });
     if (updateUser.modifiedCount == 0)
       throw ServiceUnavailable(GlobalMessageError.ServiceUnavailable);
     await user.save();
-    await this.sendPhoneCode(hashedCode, user.phone);
+    await this.sendPhoneCode(code, user.phone);
     return { message: 'کد با موفقیت برای شما ارسال شد' };
   }
 

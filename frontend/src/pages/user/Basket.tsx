@@ -135,7 +135,7 @@ const Basket = () => {
       ) {
         const paymentResponse = await Payment(
           { token, ...authHooks },
-          basketData.products.map((p) => p.id)
+          basketData.products.map((p) => ({ id: p.id, count: p.count }))
         );
         if (paymentResponse.code === 100) {
           window.location.href = paymentResponse.gatewayURL;

@@ -45,23 +45,23 @@ const FooterLinks = ({ data, type, title }: Props) => {
             </li>
           )
         )}
-        {/* {type === 'image' && (
+        {type === 'image' && (
           <a
             className='w-40 h-13 max-w-fit'
             referrerPolicy='origin'
             target='_blank'
-            href='https://trustseal.enamad.ir/?id=519024&Code=Nr6Kxy3QNinJ3N8mhOiw7K4W5t1LVVyV'
+            href='https://trustseal.enamad.ir/?id=641068&Code=vwZtHqkLXqNUJ4TvCrqOOsXPI9CHY3oZ'
           >
             <img
               // @ts-ignore
-              code='Nr6Kxy3QNinJ3N8mhOiw7K4W5t1LVVyV'
+              code='vwZtHqkLXqNUJ4TvCrqOOsXPI9CHY3oZ'
               referrerPolicy='origin'
-              src='https://trustseal.enamad.ir/logo.aspx?id=519024&Code=Nr6Kxy3QNinJ3N8mhOiw7K4W5t1LVVyV'
+              src='https://trustseal.enamad.ir/logo.aspx?id=641068&Code=vwZtHqkLXqNUJ4TvCrqOOsXPI9CHY3oZ'
               alt=''
               style={{ cursor: 'pointer' }}
             />
           </a>
-        )} */}
+        )}
       </ul>
     </div>
   );

@@ -31,7 +31,7 @@ const Edit = () => {
         editArticle({ token, ...auth }, id, {
           shortText: shortTextRef.current!.value,
           title: titleRef.current!.value,
-          category: categoryRef.current!.value.split(',') || [],
+          category: categoryRef.current!.value.trim(),
           images: imagesRef.current?.value.split(',') || [],
           author: {
             image: ownerLogoRef.current!.value,
@@ -73,8 +73,8 @@ const Edit = () => {
         ></textarea>
         <input
           type='text'
-          placeholder='نام دسته بندی'
-          defaultValue={details.category.join(',')}
+          placeholder='ایدی دسته بندی'
+          defaultValue={details.category}
           ref={categoryRef}
         />
         <input
@@ -130,9 +130,9 @@ const Edit = () => {
         return editProduct({ token, ...auth }, id, {
           shortText: shortTextRef.current!.value,
           title: titleRef.current!.value,
-          category: categoryRef.current!.value.split(',') || [],
+          category: categoryRef.current!.value.trim(),
           images: imagesRef.current?.value.split(',') || [],
-          discount: Number(discountRef.current!.value),
+          discount: Number(discountRef.current!.value) || 0,
           price: Number(priceRef.current!.value),
           Description: textRef.current!.value,
           sortByNumber: Number(sortRef.current!.value),
@@ -147,12 +147,13 @@ const Edit = () => {
         toast.error('خطا در برقراری ارتباط');
       },
     });
+    console.log(details.category)
     return (
       <div className='flex flex-col gap-6'>
         <div className='flex flex-col gap-4'></div>
         <input
           type='text'
-          placeholder='title'
+          placeholder='عنوان'
           defaultValue={details.title}
           ref={titleRef}
         />
@@ -177,8 +178,8 @@ const Edit = () => {
         />
         <input
           type='text'
-          placeholder='نام دسته بندی'
-          defaultValue={details.category.join(',')}
+          placeholder='ایدی دسته بندی-لطفا برای تغییر دوباره ایدی دسته بندی را وارد کنید!!'
+          // defaultValue={details.category}
           ref={categoryRef}
         />
         <input

@@ -55,9 +55,9 @@ class PaymentService {
     amount: number
   ): Promise<object> {
     const zarinpal_request_url =
-      'https://api.zarinpal.com/pg/v4/payment/request.json';
-    const zarinpalGatewayURL = 'https://www.zarinpal.com/pg/StartPay';
-    const description = 'بابت خرید دوره یا محصولات';
+      'https://payment.zarinpal.com/pg/v4/payment/request.json';
+    const zarinpalGatewayURL = 'https://payment.zarinpal.com/pg/StartPay/';
+    const description = 'بابت خرید محصولات';
     const zapripal_options = {
       merchant_id: process.env.ZARINPAL_MERCHANTID,
       amount: amount,

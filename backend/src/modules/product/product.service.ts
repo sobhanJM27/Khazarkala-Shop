@@ -1,5 +1,4 @@
 import { BadRequest, NotFound, ServiceUnavailable } from 'http-errors';
-import { copyObject } from '../../common/functions/globalFunction';
 import { CodeDto, ProductDto } from './dto/product.dto';
 import {
   CodeDiscountModel,
@@ -12,8 +11,6 @@ import {
   GlobalMessageError,
 } from '../../common/enums/message.enum';
 import { CategoryModel, ICategory } from '../category/model/category.model';
-import { IUser, UserModel } from '../user/model/user.model';
-import { statusEnum as statusComment } from './../../common/enums/status.enum';
 
 class ProductService {
   constructor(
@@ -43,7 +40,7 @@ class ProductService {
     await this.productModel.create({
       ...product,
       priceAfterDiscount,
-      category: category.title,
+      category: category._id,
       createdAt: new Date(),
     });
 
@@ -67,7 +64,7 @@ class ProductService {
         $set: {
           ...product,
           priceAfterDiscount,
-          category: category.title,
+          category: category._id,
           updatedAt: new Date(),
         },
       }
@@ -85,7 +82,9 @@ class ProductService {
   }
 
   async findProduct(id: string): Promise<IProduct> {
-    const product = await this.productModel.findOne({ _id: id }).populate({
+    const product = await (
+      await this.productModel.findOne({ _id: id })
+    ).populate({
       path: 'comments',
       populate: [
         {
@@ -139,7 +138,7 @@ class ProductService {
     if (isCategorySet) {
       const category = await this.categoryModel.findOne({ _id: categoryId });
       if (!category) throw NotFound(AuthMessageError.NotFound);
-      query.category = category.title;
+      query.category = category._id;
     }
 
     if (isSortSet) {

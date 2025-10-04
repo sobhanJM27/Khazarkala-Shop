@@ -28,7 +28,7 @@ const Articles = () => {
   });
 
   return (
-    <WithLoaderAndError {...{ data, isLoading, isError, error }}>
+    // <WithLoaderAndError {...{ data, isLoading, isError, error }}>
       <div className="flex flex-col gap-12">
         <Link to={"Add"} className="border-b border-purple max-w-fit">
           اضافه کردن مقاله جدید
@@ -75,7 +75,7 @@ const Articles = () => {
           })}
         </ul>
       </div>
-    </WithLoaderAndError>
+    // </WithLoaderAndError>
   );
 };
 

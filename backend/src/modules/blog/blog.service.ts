@@ -3,7 +3,6 @@ import { BlogDto } from './dto/blog.dto';
 import { BlogModel, IBlog } from './model/blog.model';
 import { AuthMessageError } from './../../common/enums/message.enum';
 import { NotFound } from 'http-errors';
-import { copyObject } from '../../common/functions/globalFunction';
 import { CategoryModel, ICategory } from '../category/model/category.model';
 
 class BlogService {
@@ -13,14 +12,14 @@ class BlogService {
   ) {}
 
   async createBlog(blog: BlogDto): Promise<object> {
-    let category = await this.categoryModel.findOne({ title: blog.category });
+    let category = await this.categoryModel.findOne({ _id: blog.category });
     await this.blogModel.create({
       title: blog.title,
       description: blog.description,
       shortText: blog.shortText,
       status: blog.status,
       images: blog.images,
-      category: category.title,
+      category: category._id,
       shortLink: blog.shortLink,
       sortByNumber: blog.sortByNumber,
       comment: blog.comment,

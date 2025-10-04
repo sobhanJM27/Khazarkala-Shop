@@ -17,9 +17,14 @@ export const updateBasket = async (
   }
 };
 
-export const Payment = async (auth: PrivateAuth, ids: string[]) => {
+type BasketItem = {
+  id: string;
+  count: number;
+};
+
+export const Payment = async (auth: PrivateAuth, basket: BasketItem[]) => {
   const privateAxios = createPrivateAxios(auth);
-  const response = await privateAxios.post(Endpoints.payment, { basket: ids });
+  const response = await privateAxios.post(Endpoints.payment, { basket });
   if (response.status === 200) {
     return response.data;
   } else {

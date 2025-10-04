@@ -29,7 +29,7 @@ const Add = () => {
           {
             shortText: shortTextRef.current!.value,
             title: titleRef.current!.value,
-            category: categoryRef.current!.value.split(',') || [],
+            category: categoryRef.current!.value.trim(),
             images: imagesRef.current?.value.split(',') || [],
             author: {
               image: ownerLogoRef.current!.value,
@@ -59,7 +59,7 @@ const Add = () => {
           rows={10}
           ref={textRef}
         ></textarea>
-        <input type='text' placeholder='عنوان دسته بندی' ref={categoryRef} />
+        <input type='text' placeholder='ایدی دسته بندی' ref={categoryRef} />
         <input type='text' placeholder='شماره ترتیب' ref={sortRef} />
         <input type='text' placeholder='عکس' ref={imagesRef} />
         <input type='text' placeholder='نام نویسنده' ref={ownerNameRef} />
@@ -89,7 +89,7 @@ const Add = () => {
           {
             shortText: shortTextRef.current!.value,
             title: titleRef.current!.value,
-            category: categoryRef.current!.value.split(',') || [],
+            category: categoryRef.current!.value.trim(),
             images: imagesRef.current?.value.split(',') || [],
             discount: Number(discountRef.current!.value),
             price: Number(priceRef.current!.value),
@@ -118,7 +118,7 @@ const Add = () => {
           ref={textRef}
         ></textarea>
         <input type='number' placeholder='قیمت اصلی محصول به تومن' ref={priceRef} />
-        <input type='text' placeholder='عنوان دسته بندی' ref={categoryRef} />
+        <input type='text' placeholder='ایدی دسته بندی' ref={categoryRef} />
         <input type='number' placeholder='درصد تخفیف' ref={discountRef} />
         <input type='text' placeholder='عکس' ref={imagesRef} />
         <input type='text' placeholder='شماره ترتیب' ref={sortRef} />

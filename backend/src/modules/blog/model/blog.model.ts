@@ -23,7 +23,7 @@ const blogSchema = new mongoose.Schema<IBlog>({
   shortText: { type: String, default: '' },
   status: { type: Boolean },
   comments: { type: [mongoose.Types.ObjectId], ref: 'comment', default: [] },
-  category: { type: [String], ref: 'category' },
+  category: { type: [mongoose.Types.ObjectId], ref: 'category' },
   images: { type: [String] },
   sortByNumber: { type: Number },
   createdAt: { type: String, default: '' },

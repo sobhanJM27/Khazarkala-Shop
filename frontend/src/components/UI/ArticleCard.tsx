@@ -60,7 +60,7 @@ const ArticleCard = ({ data }: Props) => {
         </div>
         <p className={cn("self-start", textBody2)}>{data?.shortText}</p>
         <div className="flex justify-between items-center mt-auto flex-wrap gap-2">
-          <CategoryText>{data?.category[0]}</CategoryText>
+          <CategoryText>{data?.category[0]?.title}</CategoryText>
           <span className={cn(textBody1Bold)}>مشاهده مطلب</span>
         </div>
       </article>

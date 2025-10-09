@@ -3,7 +3,7 @@ import { PaymentController } from './zarinpal.contoller';
 import { verifyToken } from './../../common/functions/globalFunction';
 
 export default (router: Router) => {
-  router.post('/basket', PaymentController.basket);
+  router.post('/basket',verifyToken, PaymentController.basket);
   router.post('/basket/update', PaymentController.updateBasket);
   router.get('/basket/getInformation', PaymentController.getAuthority);
   router.get('/basket/getAllSold', PaymentController.getAllSold);

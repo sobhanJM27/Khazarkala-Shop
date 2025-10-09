@@ -34,6 +34,7 @@ const Article = () => {
     queryKey: ['article', id],
     queryFn: () => getArticle(id as string),
   });
+  console.log(data)
   return (
     <>
       <SeoTags titleTemplate='مقالات' description='' Url='' keywords='' />
@@ -47,7 +48,7 @@ const Article = () => {
                 </h1>
                 <div>
                   <CategoryText
-                    children={data.category[0]}
+                    children={data.category[0]?.title}
                     className='text-main-white/70 border-main-white/70'
                   />
                 </div>

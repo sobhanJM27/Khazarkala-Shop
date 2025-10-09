@@ -38,7 +38,7 @@ export type Product = IdSchema & {
   title: string;
   shortText: string;
   Description: string;
-  category: string;
+  category: Category[];
   images: string[];
   price: number;
   discount: number;
@@ -59,7 +59,7 @@ export type Article = IdSchema & {
   title: string;
   shortText: string;
   description: string;
-  category: string;
+  category: Category[];
   images: string[];
   sortByNumber: number;
   createdAt: string;

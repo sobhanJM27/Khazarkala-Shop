@@ -37,7 +37,7 @@ const Add = () => {
               desc: ownerDescRef.current!.value,
             },
             description: textRef.current!.value,
-            sortByNumber: Number(sortRef.current!.value),
+            sortByNumber: sortRef.current!.value,
           }
         ),
       onSuccess: () => {
@@ -91,10 +91,10 @@ const Add = () => {
             title: titleRef.current!.value,
             category: categoryRef.current!.value.trim(),
             images: imagesRef.current?.value.split(',') || [],
-            discount: Number(discountRef.current!.value),
-            price: Number(priceRef.current!.value),
+            discount: discountRef.current!.value,
+            price: priceRef.current!.value,
             Description: textRef.current!.value,
-            sortByNumber: Number(sortRef.current!.value),
+            sortByNumber: sortRef.current!.value,
           }
         ),
       onSuccess: () => {

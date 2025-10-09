@@ -43,7 +43,7 @@ const BasketProducts = ({ listProduct, handleDeleteProduct }: Props) => {
             </TableCell>
             <TableCell className={cn(textBody2, 'text-main-primary-text')}>
               {toPersianNumbers(
-                product.priceAfterDiscount * product.count,
+                (product.priceAfterDiscount || product.price) * product.count,
                 true
               )}{' '}
               تومان

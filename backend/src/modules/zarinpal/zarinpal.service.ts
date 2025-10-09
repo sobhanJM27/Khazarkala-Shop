@@ -45,6 +45,7 @@ class PaymentService {
       }
     }
     const user: IUser = await this.userRepository.findOne({ _id: userID });
+
     if (!user) throw createHttpError.Unauthorized('کاربری یافت نشد');
     await this.zarinpal(user, listProduct, amount);
   }
@@ -66,7 +67,7 @@ class PaymentService {
         email: user?.email || 'example@domain.com',
         mobile: user.phone,
       },
-      callback_url: 'https://hyperkala-backend.liara.run/api/payment/verify',
+      callback_url: 'https://api.khazarkalaa.ir/api/payment/verify',
     };
     const RequestResult = await axios
       .post(zarinpal_request_url, zapripal_options)

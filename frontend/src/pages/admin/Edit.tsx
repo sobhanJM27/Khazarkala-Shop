@@ -31,7 +31,7 @@ const Edit = () => {
         editArticle({ token, ...auth }, id, {
           shortText: shortTextRef.current!.value,
           title: titleRef.current!.value,
-          category: categoryRef.current!.value.trim(),
+          category: categoryRef.current!.value,
           images: imagesRef.current?.value.split(',') || [],
           author: {
             image: ownerLogoRef.current!.value,
@@ -39,7 +39,7 @@ const Edit = () => {
             desc: ownerDescRef.current!.value,
           },
           description: textRef.current!.value,
-          sortByNumber: Number(sortRef.current!.value),
+          sortByNumber: sortRef.current!.value,
         }),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['articles'] });
@@ -74,7 +74,7 @@ const Edit = () => {
         <input
           type='text'
           placeholder='ایدی دسته بندی'
-          defaultValue={details.category}
+          defaultValue={details.category[0]._id}
           ref={categoryRef}
         />
         <input
@@ -130,12 +130,12 @@ const Edit = () => {
         return editProduct({ token, ...auth }, id, {
           shortText: shortTextRef.current!.value,
           title: titleRef.current!.value,
-          category: categoryRef.current!.value.trim(),
+          category: categoryRef.current!.value,
           images: imagesRef.current?.value.split(',') || [],
-          discount: Number(discountRef.current!.value) || 0,
-          price: Number(priceRef.current!.value),
+          discount: discountRef.current!.value ,
+          price: priceRef.current!.value,
           Description: textRef.current!.value,
-          sortByNumber: Number(sortRef.current!.value),
+          sortByNumber: sortRef.current!.value,
         });
       },
       onSuccess: () => {
@@ -178,8 +178,8 @@ const Edit = () => {
         />
         <input
           type='text'
-          placeholder='ایدی دسته بندی-لطفا برای تغییر دوباره ایدی دسته بندی را وارد کنید!!'
-          // defaultValue={details.category}
+          placeholder='ایدی دسته بندی'
+          defaultValue={details.category[0]._id}
           ref={categoryRef}
         />
         <input

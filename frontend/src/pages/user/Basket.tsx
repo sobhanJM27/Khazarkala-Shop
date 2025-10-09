@@ -37,7 +37,8 @@ const Basket = () => {
 
   const totalPrice = products.reduce(
     (total: number, product: Product) =>
-      total + product.priceAfterDiscount * (product.count || 1),
+      total +
+      (product.priceAfterDiscount || product.price) * (product.count || 1),
     0
   );
   const totalDiscount = discountResult;

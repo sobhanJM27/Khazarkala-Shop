@@ -197,11 +197,11 @@ export class CommentService {
     const find = await repository.findOne(filter).populate({
       path: 'comments',
       populate: [
-        { path: 'userID', select: 'fullName email' }, // اطلاعات کاربر کامنت
+        { path: 'userID', select: 'fullName email' },
         {
           path: 'answer',
           populate: [
-            { path: 'userID', select: 'fullName email' }, // اطلاعات کاربر Answer
+            { path: 'userID', select: 'fullName email' },
           ],
         },
       ],

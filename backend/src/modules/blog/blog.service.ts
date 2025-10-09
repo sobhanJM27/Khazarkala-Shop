@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 import { BlogDto } from './dto/blog.dto';
 import { BlogModel, IBlog } from './model/blog.model';
 import { AuthMessageError } from './../../common/enums/message.enum';
@@ -19,7 +19,7 @@ class BlogService {
       shortText: blog.shortText,
       status: blog.status,
       images: blog.images,
-      category: category._id,
+      category: blog.category,
       shortLink: blog.shortLink,
       sortByNumber: blog.sortByNumber,
       comment: blog.comment,
@@ -67,33 +67,54 @@ class BlogService {
   }
 
   async findOneBlog(id: string): Promise<IBlog> {
-    const blog = await this.blogModel.findOne({ _id: id }).populate({
-      path: 'comments',
-      populate: [
-        {
-          path: 'userID',
-          model: 'user',
-          select: 'first_name last_name',
-        },
-        {
-          path: 'answer',
-          populate: {
+    const blog = await this.blogModel
+      .findOne({ _id: id })
+      .populate({
+        path: 'category',
+        model: 'category',
+        select: 'title',
+      })
+      .populate({
+        path: 'comments',
+        populate: [
+          {
             path: 'userID',
+            model: 'user',
+            select: 'first_name last_name',
           },
-        },
-      ],
-    });
+          {
+            path: 'answer',
+            populate: {
+              path: 'userID',
+            },
+          },
+        ],
+      });
 
     if (!blog) throw NotFound(AuthMessageError.NotFound);
 
-    const categoryBlogs = await this.blogModel.find({
-      category: blog.category,
-    });
+    const categoryBlogs = await this.blogModel
+      .find({
+        category: blog.category,
+      })
+      .populate({
+        path: 'category',
+        model: 'category',
+        select: 'title',
+      });
     const related = categoryBlogs
       .filter((b) => b._id.toString() !== id)
       .slice(0, 5);
 
-    const latest = await this.blogModel.find().sort({ createdAt: -1 }).limit(5);
+    const latest = await this.blogModel
+      .find()
+      .populate({
+        path: 'category',
+        model: 'category',
+        select: 'title',
+      })
+      .sort({ createdAt: -1 })
+      .limit(5);
 
     await this.blogModel.updateOne({ _id: id }, { $inc: { view: 1 } });
 
@@ -121,6 +142,10 @@ class BlogService {
       .find(query)
       .limit(limit)
       .sort(sort)
+      .populate({
+        path: 'category',
+        select: 'title',
+      })
       .lean();
     if (!blogs.length) throw NotFound(AuthMessageError.NotFound);
 

@@ -2,7 +2,7 @@ import { IsArray, IsString } from 'class-validator';
 
 export class PaymentDto {
   @IsArray()
-  basket: Array<{
+  basket?: Array<{
     id: string;
     count: number;
   }>;

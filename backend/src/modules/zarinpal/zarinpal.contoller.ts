@@ -11,8 +11,9 @@ class PaymentController {
   ) {
     try {
       const basketDto: PaymentDto = req.body;
-      const userID = req.user._id;
+      const userID = req.user.id;
       const result = await PaymentService.PaymentGateway(basketDto, userID);
+      console.log(result)
       return res.status(200).json(result);
     } catch (error) {
       next(error);

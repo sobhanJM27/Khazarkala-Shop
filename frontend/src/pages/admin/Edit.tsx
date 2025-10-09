@@ -31,7 +31,13 @@ const Edit = () => {
         editArticle({ token, ...auth }, id, {
           shortText: shortTextRef.current!.value,
           title: titleRef.current!.value,
-          category: categoryRef.current!.value,
+          category: [
+            {
+              _id: categoryRef.current!.value,
+              title: details.category[0].title,
+              type: details.category[0].type,
+            },
+          ],
           images: imagesRef.current?.value.split(',') || [],
           author: {
             image: ownerLogoRef.current!.value,
@@ -39,7 +45,7 @@ const Edit = () => {
             desc: ownerDescRef.current!.value,
           },
           description: textRef.current!.value,
-          sortByNumber: sortRef.current!.value,
+          sortByNumber: Number(sortRef.current!.value),
         }),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['articles'] });
@@ -130,12 +136,18 @@ const Edit = () => {
         return editProduct({ token, ...auth }, id, {
           shortText: shortTextRef.current!.value,
           title: titleRef.current!.value,
-          category: categoryRef.current!.value,
+          category: [
+            {
+              _id: categoryRef.current!.value,
+              title: details.category[0].title,
+              type: details.category[0].type,
+            },
+          ],
           images: imagesRef.current?.value.split(',') || [],
-          discount: discountRef.current!.value ,
-          price: priceRef.current!.value,
+          discount: Number(discountRef.current!.value),
+          price: Number(priceRef.current!.value),
           Description: textRef.current!.value,
-          sortByNumber: sortRef.current!.value,
+          sortByNumber: Number(sortRef.current!.value),
         });
       },
       onSuccess: () => {
@@ -147,7 +159,7 @@ const Edit = () => {
         toast.error('خطا در برقراری ارتباط');
       },
     });
-    console.log(details.category)
+    console.log(details.category);
     return (
       <div className='flex flex-col gap-6'>
         <div className='flex flex-col gap-4'></div>

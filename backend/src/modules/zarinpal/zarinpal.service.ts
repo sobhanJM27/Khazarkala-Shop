@@ -1,4 +1,3 @@
-import * as moment from 'moment-jalali';
 import { Response } from 'express';
 import axios from 'axios';
 import { Model, ObjectId } from 'mongoose';
@@ -30,7 +29,7 @@ class PaymentService {
     private readonly codeRepository = CodeDiscountModel<ICodeDisCount>
   ) {}
 
-  async PaymentGateway(paymentDto: PaymentDto, userID: string): Promise<void> {
+  async PaymentGateway(paymentDto: PaymentDto, userID: string): Promise<object> {
     const { basket } = paymentDto;
     let amount: number = 0;
     let listProduct: Array<{ product: ObjectId; count: number }> = [];
@@ -41,13 +40,13 @@ class PaymentService {
       });
       if (findProduct) {
         listProduct.push({ product: findProduct._id, count: basket[i].count });
-        amount += findProduct.priceAfterDiscount * basket[i].count;
+        amount += (findProduct.priceAfterDiscount || findProduct.price) * basket[i].count;
       }
     }
     const user: IUser = await this.userRepository.findOne({ _id: userID });
 
     if (!user) throw createHttpError.Unauthorized('کاربری یافت نشد');
-    await this.zarinpal(user, listProduct, amount);
+    return await this.zarinpal(user, listProduct, amount);
   }
 
   async zarinpal(
@@ -57,7 +56,7 @@ class PaymentService {
   ): Promise<object> {
     const zarinpal_request_url =
       'https://payment.zarinpal.com/pg/v4/payment/request.json';
-    const zarinpalGatewayURL = 'https://payment.zarinpal.com/pg/StartPay/';
+    const zarinpalGatewayURL = 'https://payment.zarinpal.com/pg/StartPay';
     const description = 'بابت خرید محصولات';
     const zapripal_options = {
       merchant_id: process.env.ZARINPAL_MERCHANTID,
@@ -70,14 +69,29 @@ class PaymentService {
       callback_url: 'https://api.khazarkalaa.ir/api/payment/verify',
     };
     const RequestResult = await axios
-      .post(zarinpal_request_url, zapripal_options)
-      .then((result) => result.data);
+      .post(zarinpal_request_url, JSON.stringify(zapripal_options), {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      })
+      .then((res) => {
+        console.log(res.data)
+        return res.data;
+      })
+      .catch((err) => {
+        console.error(
+          'Zarinpal Request Error:',
+          err.response?.data || err.message
+        );
+        throw err;
+      });
     const { authority, code } = RequestResult.data;
     if (code == 100 && authority) {
       const payment = await this.paymentRepository.create({
         authority,
         amount,
-        paymentData: moment().format('jYYYYjMMjDDHHmmss'),
+        paymentData: new Date().getTime(),
         invoiceNumber: invoiceNumberGenerator(),
         verify: false,
         description,
@@ -87,11 +101,14 @@ class PaymentService {
         productID: listProduct,
         payment: payment._id,
       });
-      return {
+
+      const data = {
         statusCode: 200,
         code,
         gatewayURL: `${zarinpalGatewayURL}/${authority}`,
       };
+
+      return data
     }
   }
 

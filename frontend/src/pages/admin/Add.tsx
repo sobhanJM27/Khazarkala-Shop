@@ -29,7 +29,13 @@ const Add = () => {
           {
             shortText: shortTextRef.current!.value,
             title: titleRef.current!.value,
-            category: categoryRef.current!.value.trim(),
+            category: [
+              {
+                _id: categoryRef.current!.value,
+                title: 'blog',
+                type: 'blog',
+              },
+            ],
             images: imagesRef.current?.value.split(',') || [],
             author: {
               image: ownerLogoRef.current!.value,
@@ -37,7 +43,7 @@ const Add = () => {
               desc: ownerDescRef.current!.value,
             },
             description: textRef.current!.value,
-            sortByNumber: sortRef.current!.value,
+            sortByNumber: Number(sortRef.current!.value),
           }
         ),
       onSuccess: () => {
@@ -89,12 +95,18 @@ const Add = () => {
           {
             shortText: shortTextRef.current!.value,
             title: titleRef.current!.value,
-            category: categoryRef.current!.value.trim(),
+            category: [
+              {
+                _id: categoryRef.current!.value,
+                title: 'product',
+                type: 'product',
+              },
+            ],
             images: imagesRef.current?.value.split(',') || [],
-            discount: discountRef.current!.value,
-            price: priceRef.current!.value,
+            discount: Number(discountRef.current!.value),
+            price: Number(priceRef.current!.value),
             Description: textRef.current!.value,
-            sortByNumber: sortRef.current!.value,
+            sortByNumber: Number(sortRef.current!.value),
           }
         ),
       onSuccess: () => {
@@ -117,7 +129,11 @@ const Add = () => {
           rows={10}
           ref={textRef}
         ></textarea>
-        <input type='number' placeholder='قیمت اصلی محصول به تومن' ref={priceRef} />
+        <input
+          type='number'
+          placeholder='قیمت اصلی محصول به تومن'
+          ref={priceRef}
+        />
         <input type='text' placeholder='ایدی دسته بندی' ref={categoryRef} />
         <input type='number' placeholder='درصد تخفیف' ref={discountRef} />
         <input type='text' placeholder='عکس' ref={imagesRef} />

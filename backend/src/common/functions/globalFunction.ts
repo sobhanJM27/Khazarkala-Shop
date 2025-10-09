@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { NotFound, BadRequest, Unauthorized } from 'http-errors';
-import moment from 'moment-jalali';
 import { isMongoId } from 'class-validator';
 import * as Jwt from 'jsonwebtoken';
 import { IUser, UserModel } from './../../modules/user/model/user.model';
@@ -26,7 +25,7 @@ function randomNumber() {
 
 function invoiceNumberGenerator(): string {
   return (
-    moment().format('jYYYYjMMjDDHHmmssSSS') +
+    new Date().toISOString() +
     String(process.hrtime()[1]).padStart(9)
   );
 }

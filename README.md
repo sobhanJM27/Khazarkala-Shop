@@ -14,7 +14,7 @@
 </p>
 
 <p>
-  Full-featured online store with authentication, product management, payments, notifications, and admin dashboard.
+  Full-featured online store with authentication, product management, payments, notifications, user dashboard, and admin dashboard.
 </p>
 
 </div>
@@ -38,7 +38,13 @@
 ## 📸 Preview
 
 <p align="center">
-  <img src="./frontend/public/images/screenshot.png" width="90%">
+  <picture>
+    <!-- Dark Mode -->
+    <source media="(prefers-color-scheme: dark)" srcset="./frontend/public/images/Screenshot-dark.png">
+    <br/>
+    <!-- Light Mode -->
+    <img src="./frontend/public/images/Screenshot-light.png" width="90%" alt="Khazarkala Preview">
+  </picture>
 </p>
 
 ---
@@ -63,17 +69,36 @@
 Khazarkala-Shop
 │
 ├── frontend
-│   ├── src
-│   ├── components
-│   └── pages
+│   └── src
+│       ├── api
+│       ├── components
+│       ├── constants
+│       ├── hooks
+│       ├── pages
+│       ├── redux
+│       ├── types
+│       └── utils
 │
 ├── backend
-│   ├── controllers
-│   ├── models
-│   ├── routes
-│   └── middleware
-│
-└── uploads
+│   ├── common
+│   │   ├── enums
+│   │   ├── functions
+│   │   └── types
+│   │
+│   ├── modules
+│   │   ├── auth
+│   │   ├── blog
+│   │   ├── category
+│   │   ├── comment
+│   │   ├── images
+│   │   ├── product
+│   │   ├── search
+│   │   ├── user
+│   │   ├── zarinpal
+│   │   └── fileupload.ts
+│   │
+│   ├── router.routes.ts
+│   └── server.ts
 ```
 
 ---

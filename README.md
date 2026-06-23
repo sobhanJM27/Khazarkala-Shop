@@ -40,10 +40,11 @@
 <p align="center">
   <picture>
     <!-- Dark Mode -->
-    <source media="(prefers-color-scheme: dark)" srcset="./frontend/public/images/Screenshot-dark.png">
-    <br/>
+    <img src="./frontend/public/images/screenshot-dark.png" width="90%" alt="Khazarkala Preview">
+  </picture>
+  <picture>
     <!-- Light Mode -->
-    <img src="./frontend/public/images/Screenshot-light.png" width="90%" alt="Khazarkala Preview">
+    <img src="./frontend/public/images/screenshot-light.png" width="90%" alt="Khazarkala Preview">
   </picture>
 </p>
 

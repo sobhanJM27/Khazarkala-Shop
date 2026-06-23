@@ -10,6 +10,7 @@ import { cn } from '../utils/lib/cn';
 import { addToBasketHandler } from '../utils/basket';
 import { useAuth } from '../hooks/useAuth';
 import { useAppDispatch } from '../hooks/useReduxHooks';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   image: string;
@@ -21,9 +22,11 @@ const ProductDetailsBox = ({ id, image, price, priceAfterDicount }: Props) => {
   const [collapsed, setCollapsed] = useState(false);
   const { Auth } = useAuth();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const addHandler = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     addToBasketHandler(id, 1, Auth, dispatch);
+    navigate('/dashboard/basket');
   };
 
   return (

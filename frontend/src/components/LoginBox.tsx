@@ -24,7 +24,7 @@ const LoginBox = () => {
   const Navigate = useNavigate();
   const queryClient = useQueryClient();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/dashboard";
+  const from = location.state?.from?.pathname || "/";
   const dispatch = useAppDispatch();
   const handleSendOtp = async (
     btnStateHandler: booleanStateHandleType,

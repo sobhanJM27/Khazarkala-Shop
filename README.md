@@ -1,52 +1,113 @@
-# Khazarkala-Shop 🛒
+<div align="center">
 
-Khazarkala-Shop is a modern e-commerce platform built with the **MERN Stack** (MongoDB, Express.js, React, Node.js).  
-The project includes both **backend** and **frontend** parts, providing a full-featured online store for managing products, users, and orders.
+# 🛒 Khazarkala Shop
 
----
+### Modern MERN Stack E-Commerce Platform
 
-## 🚀 Features
-- Product management (Add, Edit, Delete, View)  
-- User authentication with JWT  
-- SMS integration with Melipayamak  
-- Email notifications using Nodemailer  
-- Product image uploads with Multer  
-- API documentation with Swagger  
-- Responsive UI with TailwindCSS  
-- State management with Redux Toolkit and React Query  
-- Jalali date support
+<p>
+  <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript" />
+  <img src="https://img.shields.io/badge/Vite-5-646CFF?logo=vite" />
+  <img src="https://img.shields.io/badge/TailwindCSS-38BDF8?logo=tailwindcss" />
+  <img src="https://img.shields.io/badge/Node.js-339933?logo=node.js" />
+  <img src="https://img.shields.io/badge/MongoDB-47A248?logo=mongodb" />
+</p>
 
----
+<p>
+  Full-featured online store with authentication, product management, payments, notifications, and admin dashboard.
+</p>
 
-## ⚙️ Technologies Used
-
-### Backend
-- Node.js + Express.js  
-- MongoDB + Mongoose  
-- JWT Authentication  
-- Multer (File uploads)  
-- Nodemailer (Email service)  
-- Morgan (HTTP request logger)  
-- bcryptjs (Password hashing)  
-- dotenv (Environment variable management)
-
-### Frontend
-- React + Vite + TypeScript  
-- Redux Toolkit  
-- React Query  
-- React Router DOM  
-- Radix UI components  
-- TailwindCSS for styling  
-- React Hot Toast (Notifications)  
-- React Multi Carousel (Product sliders)  
-- React Helmet Async (SEO meta tags)
+</div>
 
 ---
 
-## 🛠️ Installation
+## ✨ Highlights
 
-### 1. Install and Run
+* 🔐 JWT Authentication
+* 📦 Product Management
+* 📱 Fully Responsive Design
+* 📧 Email Notifications
+* 📲 SMS Verification
+* ☁️ Image Uploads with Multer
+* 📖 Swagger API Documentation
+* ⚡ Optimized with React Query
+* 🎯 SEO Friendly
+
+---
+
+## 📸 Preview
+
+<p align="center">
+  <img src="./screenshots/home.png" width="90%">
+</p>
+
+---
+
+## 🏗 Tech Stack
+
+| Frontend       | Backend    |
+| -------------- | ---------- |
+| React          | Node.js    |
+| TypeScript     | Express.js |
+| Vite           | MongoDB    |
+| TailwindCSS    | Mongoose   |
+| Redux Toolkit  | JWT        |
+| TanStack Query | Nodemailer |
+| React Router   | Multer     |
+
+---
+
+## 📂 Project Structure
+
+```text
+Khazarkala-Shop
+│
+├── frontend
+│   ├── src
+│   ├── components
+│   └── pages
+│
+├── backend
+│   ├── controllers
+│   ├── models
+│   ├── routes
+│   └── middleware
+│
+└── uploads
+```
+
+---
+
+## 🚀 Quick Start
+
 ```bash
+git clone <repo-url>
+
 cd frontend
 npm install
 npm run dev
+
+cd ../backend
+npm install
+npm start
+```
+
+---
+
+## 🌟 Features Overview
+
+| Feature           | Status |
+| ----------------- | ------ |
+| Authentication    | ✅      |
+| Product Catalog   | ✅      |
+| Shopping Cart     | ✅      |
+| SMS Verification  | ✅      |
+| Email Service     | ✅      |
+| Admin Dashboard   | ✅      |
+| API Documentation | ✅      |
+
+---
+
+## 📄 License
+
+MIT License

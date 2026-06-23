@@ -13,6 +13,7 @@ import { toPersianDate } from '../../utils/toPersianDate';
 import Button from './Button';
 import Basket from './icons/Basket';
 import { useAppDispatch } from '../../hooks/useReduxHooks';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   data: Product;
@@ -22,9 +23,11 @@ type Props = {
 const ProductHoverCard = ({ data, className }: Props) => {
   const { Auth } = useAuth();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const addHandler = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     addToBasketHandler(data?._id,1, Auth, dispatch);
+    navigate('/dashboard/basket');
   };
   
   return (

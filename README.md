@@ -38,7 +38,7 @@
 ## 📸 Preview
 
 <p align="center">
-  <img src="./screenshots/home.png" width="90%">
+  <img src="./frontend/public/images/screenshot.png" width="90%">
 </p>
 
 ---
@@ -105,9 +105,3 @@ npm start
 | Email Service     | ✅      |
 | Admin Dashboard   | ✅      |
 | API Documentation | ✅      |
-
----
-
-## 📄 License
-
-MIT License
